@@ -205,6 +205,49 @@ def admin():
     conn.close()
     return render_template('admin.html', posts=posts, total_views=total_views)
 
+# 🚀 EDIT POST ROUTE
+@app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
+def edit(post_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        seo_tags = request.form['seo_tags']
+        category = request.form['category']
+        
+        # अगर यूज़र ने नई फोटो अपलोड नहीं की है, तो पुरानी वाली ही रखें
+        image_url = request.form.get('existing_image', '')
+        
+        # अगर नई फोटो अपलोड की गई है, तो ImgBB पर भेजें
+        if 'image_file' in request.files:
+            file = request.files['image_file']
+            if file.filename != '':
+                payload = {
+                    "key": IMGBB_API_KEY,
+                    "image": base64.b64encode(file.read()).decode('utf-8')
+                }
+                res = requests.post("https://api.imgbb.com/1/upload", data=payload)
+                if res.status_code == 200:
+                    image_url = res.json()['data']['url']
+
+        # डेटाबेस में अपडेट करें
+        cursor.execute('''
+            UPDATE posts 
+            SET title = %s, content = %s, seo_tags = %s, category = %s, image_path = %s
+            WHERE id = %s
+        ''', (title, content, seo_tags, category, image_url, post_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('admin'))
+
+    # GET Request: पुरानी जानकारी निकालकर फॉर्म में दिखाएं
+    cursor.execute('SELECT * FROM posts WHERE id = %s', (post_id,))
+    post = cursor.fetchone()
+    conn.close()
+    return render_template('edit.html', post=post)
+
 @app.route('/delete/<int:post_id>')
 def delete(post_id):
     conn = get_db_connection()
