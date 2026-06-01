@@ -157,8 +157,12 @@
             <i class="fas fa-bars hamburger-btn" id="menuBtn"></i>
             <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
         </div>
-        <div>
-            <i class="fas fa-search" style="color: var(--text-light); font-size: 1.2rem; cursor: pointer;"></i>
+       <div style="display: flex; align-items: center; position: relative;">
+            <form action="/search" method="GET" id="searchBox" style="display: none; position: absolute; right: 30px; background: white; padding: 5px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eef2f5;">
+                <input type="text" name="q" placeholder="खबरें सर्च करें..." required style="border: none; outline: none; font-size: 0.95rem; width: 150px; background: transparent; color: var(--text-dark);">
+                <button type="submit" style="background: none; border: none; color: var(--brand-red); cursor: pointer; font-size: 1.1rem;"><i class="fas fa-arrow-right"></i></button>
+            </form>
+            <i class="fas fa-search" id="searchIcon" style="color: var(--text-light); font-size: 1.2rem; cursor: pointer; transition: 0.3s;"></i>
         </div>
     </header>
 
