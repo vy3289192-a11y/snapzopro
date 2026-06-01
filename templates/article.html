@@ -67,8 +67,12 @@
 </head>
 <body>
 
-    <header class="header">
-        <a href="/"><i class="fas fa-bolt" style="color:#e63946;"></i> Snapzo <span>Pro</span></a>
+  <header class="header" style="display: flex; align-items: center; gap: 15px;">
+        <a href="javascript:void(0);" onclick="if(document.referrer.includes(window.location.host)) { history.back(); } else { window.location.href = '/'; }" style="font-size: 1.3rem; padding-right: 15px; border-right: 2px solid #eef2f5;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        
+        <a href="/" style="border: none; padding: 0;"><i class="fas fa-bolt" style="color:#e63946;"></i> Snapzo <span>Pro</span></a>
     </header>
 
     <div class="feed-container" id="infinite-feed">
