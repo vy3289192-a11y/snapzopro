@@ -228,7 +228,7 @@
                 <a href="/article/{{ post['id'] }}/{{ post['title'] | slugify }}" class="news-card">
                     <div class="img-wrapper">
                         <span class="card-badge">{{ post['category'] }}</span>
-                        <img src="{{ post['image_path'] or 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=600' }}" alt="News Thumbnail">
+                        <img src="{{ post['image_path'] or 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=600' }}  alt="loading="lazy">
                     </div>
                     <div class="card-content">
                         <h2 class="card-title">{{ post['title'] }}</h2>
