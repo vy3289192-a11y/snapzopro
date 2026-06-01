@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post | Snapzo Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 30px; }
+        .edit-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { color: #1d3557; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #457b9d; }
+        input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 12px 25px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-save:hover { background: #059669; }
+        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #e63946; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="edit-container">
+    <h2>खबर एडिट करें 📝</h2>
+    <form action="/edit/{{ post['id'] }}" method="POST" enctype="multipart/form-data">
+        
+        <div class="form-group">
+            <label>Title (टाइटल)</label>
+            <input type="text" name="title" value="{{ post['title'] }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Category (कैटेगरी)</label>
+            <select name="category">
+                <option value="Home" {% if post['category'] == 'Home' %}selected{% endif %}>Home / Trending</option>
+                <option value="India" {% if post['category'] == 'India' %}selected{% endif %}>India</option>
+                <option value="Car" {% if post['category'] == 'Car' %}selected{% endif %}>Car</option>
+                <option value="Bike" {% if post['category'] == 'Bike' %}selected{% endif %}>Bike</option>
+                <option value="Mobile" {% if post['category'] == 'Mobile' %}selected{% endif %}>Mobile</option>
+                <option value="Entertainment" {% if post['category'] == 'Entertainment' %}selected{% endif %}>Entertainment</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>SEO Keywords (कॉमा लगाकर)</label>
+            <input type="text" name="seo_tags" value="{{ post['seo_tags'] }}">
+        </div>
+
+        <div class="form-group">
+            <label>New Image (अगर फोटो बदलनी हो तभी चुनें, वरना खाली छोड़ दें)</label>
+            <input type="file" name="image_file" accept="image/*">
+            <input type="hidden" name="existing_image" value="{{ post['image_path'] }}">
+            {% if post['image_path'] %}
+                <p style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Current Image: <a href="{{ post['image_path'] }}" target="_blank">View</a></p>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Content (पूरी खबर)</label>
+            <textarea name="content" id="content_editor">{{ post['content'] }}</textarea>
+            <script>CKEDITOR.replace('content_editor');</script>
+        </div>
+
+        <button type="submit" class="btn-save">Update Post (सेव करें)</button>
+        <a href="/my-secret-admin-999" class="cancel-link">Cancel (वापस जाएँ)</a>
+    </form>
+</div>
+
+</body>
+</html>
