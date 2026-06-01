@@ -101,6 +101,31 @@ def article(post_id, slug=None):
     conn.close()
     return render_template('article.html', post=post, related_posts=related_posts)
 
+# 🚀 SEARCH ROUTE
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('index'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    # ILIKE का इस्तेमाल (ताकि छोटे-बड़े अक्षर दोनों सर्च हो सकें)
+    search_pattern = f"%{query}%"
+    cursor.execute('''
+        SELECT * FROM posts 
+        WHERE status='published' AND (title ILIKE %s OR content ILIKE %s) 
+        ORDER BY created_at DESC
+    ''', (search_pattern, search_pattern))
+    
+    posts = cursor.fetchall()
+    conn.close()
+    
+    # हम index.html का ही इस्तेमाल करेंगे, बस कैटेगरी का नाम बदलकर सर्च क्वेरी कर देंगे
+    return render_template('index.html', posts=posts, current_category=f'Search Results for "{query}"')
+
+
 # इमोजी रिएक्शन API
 @app.route('/react/<int:post_id>/<reaction_type>', methods=['POST'])
 def react(post_id, reaction_type):
