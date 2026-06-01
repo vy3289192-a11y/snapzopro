@@ -2,12 +2,23 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Snapzo Pro | Premium News</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "00000000-0000-0000-0000-000000000000",
+          notifyButton: { enable: true },
+        });
+      });
+    </script>
+
     <style>
         :root {
             --brand-red: #e63946;
@@ -20,9 +31,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-dark); -webkit-font-smoothing: antialiased; }
 
-        /* Premium Sticky Header (Glass Effect) */
+        /* --- Header --- */
         .header { 
-            background: rgba(255, 255, 255, 0.85); 
+            background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(12px);
             padding: 15px 30px; 
             display: flex; 
@@ -31,13 +42,23 @@
             position: sticky; 
             top: 0; 
             z-index: 1000; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
         }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        
+        .hamburger-btn { 
+            font-size: 1.5rem; 
+            color: var(--text-dark); 
+            cursor: pointer; 
+            display: none; /* PC पर छुपा रहेगा */
+        }
+
         .logo { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); text-decoration: none; display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--brand-red); }
         .logo span { color: var(--brand-red); }
 
-        /* Pill-Shaped Category Menu */
+        /* --- PC Navigation Pills --- */
         .nav-menu { 
             background: var(--white); 
             padding: 15px 30px; 
@@ -48,137 +69,114 @@
             scrollbar-width: none; 
         }
         .nav-menu::-webkit-scrollbar { display: none; }
-        .nav-pill { 
-            background: #f1f5f9; 
-            color: var(--text-light); 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 0.95rem; 
-            padding: 8px 18px; 
-            border-radius: 50px; 
-            white-space: nowrap; 
-            transition: all 0.3s ease; 
-            border: 1px solid transparent;
-        }
+        .nav-pill { background: #f1f5f9; color: var(--text-light); text-decoration: none; font-weight: 600; font-size: 0.95rem; padding: 8px 18px; border-radius: 50px; white-space: nowrap; transition: 0.3s; }
         .nav-pill:hover { background: #e2e8f0; color: var(--text-dark); }
         .nav-pill.active { background: var(--brand-red); color: var(--white); box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
 
-        /* Main Container */
+        /* --- Mobile Sidebar (Drawer) --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 1500;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+
+        .mobile-drawer {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: var(--white); z-index: 2000;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            transition: left 0.3s ease; display: flex; flex-direction: column;
+        }
+        .mobile-drawer.active { left: 0; }
+
+        .drawer-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2f5; }
+        .close-btn { font-size: 1.5rem; color: var(--text-light); cursor: pointer; }
+        
+        .drawer-links { display: flex; flex-direction: column; padding: 20px 0; overflow-y: auto; }
+        .drawer-links a { 
+            padding: 15px 25px; text-decoration: none; font-size: 1.1rem; font-weight: 600; 
+            color: var(--text-dark); display: flex; align-items: center; gap: 15px; transition: 0.2s;
+        }
+        .drawer-links a i { width: 25px; text-align: center; color: var(--text-light); }
+        .drawer-links a:hover { background: #f8fafc; color: var(--brand-red); }
+        .drawer-links a:hover i { color: var(--brand-red); }
+        .drawer-links a.active { background: #fff1f2; color: var(--brand-red); border-left: 4px solid var(--brand-red); }
+        .drawer-links a.active i { color: var(--brand-red); }
+
+        /* --- Main Content --- */
         .container { max-width: 1250px; margin: 30px auto; padding: 0 20px; }
 
-        /* HERO SECTION (Featured Post) */
         .hero-section { margin-bottom: 40px; }
-        .hero-card { 
-            position: relative; 
-            width: 100%; 
-            height: 450px; 
-            border-radius: 20px; 
-            overflow: hidden; 
-            display: block; 
-            text-decoration: none; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            transition: transform 0.4s ease;
-        }
+        .hero-card { position: relative; width: 100%; height: 450px; border-radius: 20px; overflow: hidden; display: block; text-decoration: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); transition: 0.4s; }
         .hero-card:hover { transform: translateY(-5px); }
         .hero-img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-overlay { 
-            position: absolute; 
-            bottom: 0; left: 0; right: 0; 
-            height: 70%; 
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 100%); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-end; 
-            padding: 40px; 
-        }
-        .hero-badge { 
-            background: var(--brand-red); 
-            color: var(--white); 
-            padding: 6px 14px; 
-            border-radius: 6px; 
-            font-size: 0.85rem; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            align-self: flex-start; 
-            margin-bottom: 15px; 
-        }
-        .hero-title { color: var(--white); font-size: 2.2rem; font-weight: 800; line-height: 1.3; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .hero-meta { color: #cbd5e1; font-size: 0.9rem; font-weight: 400; display: flex; gap: 15px; }
+        .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 70%; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 40px; }
+        .hero-badge { background: var(--brand-red); color: var(--white); padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; align-self: flex-start; margin-bottom: 15px; }
+        .hero-title { color: var(--white); font-size: 2.2rem; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
+        .hero-meta { color: #cbd5e1; font-size: 0.9rem; display: flex; gap: 15px; }
 
-        /* Section Title */
-        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
         .section-title i { color: var(--brand-red); }
 
-        /* Premium Grid Cards */
         .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .news-card { 
-            background: var(--white); 
-            border-radius: 16px; 
-            overflow: hidden; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03); 
-            transition: all 0.3s ease; 
-            display: flex; 
-            flex-direction: column; 
-            text-decoration: none; 
-            border: 1px solid #f1f5f9;
-        }
+        .news-card { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; text-decoration: none; border: 1px solid #f1f5f9; transition: 0.3s; }
         .news-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: #e2e8f0; }
         .img-wrapper { position: relative; width: 100%; height: 220px; overflow: hidden; }
-        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .news-card:hover .img-wrapper img { transform: scale(1.05); }
-        .card-badge { 
-            position: absolute; 
-            top: 15px; left: 15px; 
-            background: rgba(255, 255, 255, 0.9); 
-            color: var(--brand-red); 
-            font-weight: 800; 
-            font-size: 0.75rem; 
-            padding: 5px 12px; 
-            border-radius: 30px; 
-            text-transform: uppercase; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            backdrop-filter: blur(4px);
-        }
+        .card-badge { position: absolute; top: 15px; left: 15px; background: rgba(255, 255, 255, 0.9); color: var(--brand-red); font-weight: 800; font-size: 0.75rem; padding: 5px 12px; border-radius: 30px; text-transform: uppercase; }
         .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); line-height: 1.4; margin-bottom: 15px; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         .read-btn { color: var(--brand-red); font-weight: 700; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .news-card:hover .read-btn { gap: 8px; }
 
-        /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); grid-column: 1 / -1; }
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; grid-column: 1 / -1; }
         .empty-state i { font-size: 4rem; color: #cbd5e1; margin-bottom: 20px; }
-        .empty-state h2 { color: var(--text-dark); font-size: 1.5rem; }
 
-        /* Mobile Adjustments */
+        /* --- Mobile Responsive Fixes --- */
         @media (max-width: 768px) {
-            .hero-card { height: 350px; }
-            .hero-title { font-size: 1.5rem; }
-            .hero-overlay { padding: 25px; }
             .header { padding: 15px 20px; }
+            .logo { font-size: 1.5rem; }
+            .hamburger-btn { display: block; } /* मोबाइल पर हैमबर्गर दिखेगा */
+            .nav-menu { display: none; } /* मोबाइल पर पिल्स छुप जाएंगे */
+            
+            .hero-card { height: 320px; border-radius: 12px; }
+            .hero-title { font-size: 1.4rem; }
+            .hero-overlay { padding: 20px; height: 100%; background: linear-gradient(to top, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.2) 100%); }
+            
+            .container { padding: 0 15px; margin: 20px auto; }
+            .news-grid { gap: 20px; }
+            .news-card { border-radius: 12px; }
         }
     </style>
-
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(function(OneSignal) {
-        OneSignal.init({
-          appId: "00000000-0000-0000-0000-000000000000",
-          notifyButton: { enable: true },
-        });
-      });
-    </script>
 </head>
 <body>
 
     <header class="header">
-        <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
+        <div class="header-left">
+            <i class="fas fa-bars hamburger-btn" id="menuBtn"></i>
+            <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
+        </div>
         <div>
             <i class="fas fa-search" style="color: var(--text-light); font-size: 1.2rem; cursor: pointer;"></i>
         </div>
     </header>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="mobile-drawer" id="drawer">
+        <div class="drawer-header">
+            <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
+            <i class="fas fa-times close-btn" id="closeBtn"></i>
+        </div>
+        <div class="drawer-links">
+            <a href="/" class="{% if current_category == 'Home' %}active{% endif %}"><i class="fas fa-fire"></i> Trending</a>
+            <a href="/category/India" class="{% if current_category == 'India' %}active{% endif %}">🇮🇳 India</a>
+            <a href="/category/Car" class="{% if current_category == 'Car' %}active{% endif %}">🚗 Auto News</a>
+            <a href="/category/Bike" class="{% if current_category == 'Bike' %}active{% endif %}">🏍️ Bike News</a>
+            <a href="/category/Mobile" class="{% if current_category == 'Mobile' %}active{% endif %}">📱 Tech & Mobile</a>
+            <a href="/category/Entertainment" class="{% if current_category == 'Entertainment' %}active{% endif %}">🎬 Entertainment</a>
+        </div>
+    </div>
 
     <nav class="nav-menu">
         <a href="/" class="nav-pill {% if current_category == 'Home' %}active{% endif %}">🔥 Trending</a>
@@ -232,10 +230,27 @@
             <div class="empty-state">
                 <i class="fas fa-newspaper"></i>
                 <h2>अभी तक कोई ताज़ा खबर पब्लिश नहीं हुई है।</h2>
-               
+                <p style="color: #94a3b8; margin-top: 10px;">एडमिन पैनल में जाकर पहली खबर डालें।</p>
             </div>
         {% endif %}
     </main>
 
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+            // Menu खुलने पर बैकग्राउंड स्क्रॉल डिसेबल करें
+            document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+    </script>
 </body>
 </html>
