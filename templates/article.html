@@ -147,7 +147,31 @@
                 const data = await response.json();
                 
                 if (data.error) {
-                    document.getElementById('loading-spinner').innerHTML = "<b>आप इस कैटेगरी की सारी खबरें पढ़ चुके हैं। ✅</b>";
+                    // 🚀 यहाँ पर मैंने आपका नया डिज़ाइन डाला है
+                    document.getElementById('loading-spinner').innerHTML = `
+                    <div id="endMessage" style="text-align: center; padding: 30px 20px; background: white; border-radius: 12px; margin-top: 30px; border: 1px solid #eef2f5; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
+                        <h3 style="font-size: 1.3rem; color: #1d3557; margin-bottom: 10px; font-weight: 800;">
+                            ✅ आपने इस कैटेगरी की सारी ख़बरें पढ़ ली हैं!
+                        </h3>
+                        <p style="font-size: 1rem; color: #457b9d; margin-bottom: 25px;">अब आगे क्या पढ़ना चाहेंगे? 👇</p>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
+                            <a href="/" onmouseover="this.style.background='#e63946'; this.style.color='white'" onmouseout="this.style.background='#fff1f2'; this.style.color='#e63946'" style="background: #fff1f2; color: #e63946; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 700; border: 1px solid #ffe4e6; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-fire"></i> Trending
+                            </a>
+                            <a href="/category/India" onmouseover="this.style.background='#1d3557'; this.style.color='white'" onmouseout="this.style.background='#f8fafc'; this.style.color='#1d3557'" style="background: #f8fafc; color: #1d3557; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; border: 1px solid #eef2f5; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                                🇮🇳 India
+                            </a>
+                            <a href="/category/Car" onmouseover="this.style.background='#1d3557'; this.style.color='white'" onmouseout="this.style.background='#f8fafc'; this.style.color='#1d3557'" style="background: #f8fafc; color: #1d3557; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; border: 1px solid #eef2f5; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                                🚗 Auto News
+                            </a>
+                            <a href="/category/Mobile" onmouseover="this.style.background='#1d3557'; this.style.color='white'" onmouseout="this.style.background='#f8fafc'; this.style.color='#1d3557'" style="background: #f8fafc; color: #1d3557; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; border: 1px solid #eef2f5; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                                📱 Tech
+                            </a>
+                            <a href="/category/Entertainment" onmouseover="this.style.background='#1d3557'; this.style.color='white'" onmouseout="this.style.background='#f8fafc'; this.style.color='#1d3557'" style="background: #f8fafc; color: #1d3557; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; border: 1px solid #eef2f5; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+                                🎬 Entertainment
+                            </a>
+                        </div>
+                    </div>`;
                     return;
                 }
 
