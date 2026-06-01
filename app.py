@@ -1,14 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
-import sqlite3
-import os
+import psycopg2
+import psycopg2.extras
+import requests
+import base64
 import re
-from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# 🚀 PRO SEO TRICK: Title को URL (Slug) में बदलने का फ़िल्टर
+# ==========================================
+# 🚀 1. यहाँ अपनी KEYS डालें (बस यही दो लाइन बदलनी हैं)
+# ==========================================
+DATABASE_URL = "postgresql://neondb_owner:npg_DQIh28ckflRN@ep-odd-sunset-apwike5e-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+IMGBB_API_KEY = "08980c6f8228259ac408fe7f0a67fa45"
+# ==========================================
+
+# 🚀 PRO SEO TRICK: Title को URL (Slug) में बदलने का फ़िल्टर
 @app.template_filter('slugify')
 def slugify(s):
     s = str(s).lower().strip()
@@ -17,42 +24,80 @@ def slugify(s):
     s = re.sub(r'^-+|-+$', '', s)
     return s if s else "news"
 
+# 🚀 Cloud Database Connection
 def get_db_connection():
-    conn = sqlite3.connect('news.db')
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL)
     return conn
+
+# 🚀 Auto-Create Table in Cloud (पहली बार रन होने पर टेबल बनाएगा)
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS posts (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            image_path TEXT,
+            seo_tags TEXT,
+            status TEXT DEFAULT 'published',
+            category TEXT DEFAULT 'General',
+            views INTEGER DEFAULT 0,
+            react_fire INTEGER DEFAULT 0,
+            react_shock INTEGER DEFAULT 0,
+            react_sad INTEGER DEFAULT 0,
+            react_angry INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# सर्वर स्टार्ट होते ही डेटाबेस चेक करेगा
+init_db() 
+
 
 @app.route('/')
 def index():
     conn = get_db_connection()
-    posts = conn.execute("SELECT * FROM posts WHERE status='published' ORDER BY created_at DESC").fetchall()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM posts WHERE status='published' ORDER BY created_at DESC")
+    posts = cursor.fetchall()
     conn.close()
     return render_template('index.html', posts=posts, current_category='Home')
 
 @app.route('/category/<cat_name>')
 def category_posts(cat_name):
     conn = get_db_connection()
-    posts = conn.execute("SELECT * FROM posts WHERE status='published' AND category=? ORDER BY created_at DESC", (cat_name,)).fetchall()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT * FROM posts WHERE status='published' AND category=%s ORDER BY created_at DESC", (cat_name,))
+    posts = cursor.fetchall()
     conn.close()
     return render_template('index.html', posts=posts, current_category=cat_name)
 
-# 🚀 SEO URL Route (उदा: /article/1/maruti-car-launch)
+# 🚀 SEO URL Route
 @app.route('/article/<int:post_id>')
 @app.route('/article/<int:post_id>/<slug>')
 def article(post_id, slug=None):
     conn = get_db_connection()
-    conn.execute('UPDATE posts SET views = views + 1 WHERE id = ?', (post_id,))
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cursor.execute('UPDATE posts SET views = views + 1 WHERE id = %s', (post_id,))
     conn.commit()
-    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    
+    cursor.execute('SELECT * FROM posts WHERE id = %s', (post_id,))
+    post = cursor.fetchone()
     
     related_posts = []
     if post:
-        category = post['category']
-        related_posts = conn.execute('''
+        cursor.execute('''
             SELECT * FROM posts 
-            WHERE category = ? AND id != ? AND status = 'published' 
+            WHERE category = %s AND id != %s AND status = 'published' 
             ORDER BY created_at DESC LIMIT 3
-        ''', (category, post_id)).fetchall()
+        ''', (post['category'], post_id))
+        related_posts = cursor.fetchall()
+        
     conn.close()
     return render_template('article.html', post=post, related_posts=related_posts)
 
@@ -62,26 +107,32 @@ def react(post_id, reaction_type):
     valid_reactions = ['react_fire', 'react_shock', 'react_sad', 'react_angry']
     if reaction_type in valid_reactions:
         conn = get_db_connection()
-        conn.execute(f'UPDATE posts SET {reaction_type} = {reaction_type} + 1 WHERE id = ?', (post_id,))
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute(f'UPDATE posts SET {reaction_type} = {reaction_type} + 1 WHERE id = %s', (post_id,))
         conn.commit()
-        new_count = conn.execute(f'SELECT {reaction_type} FROM posts WHERE id = ?', (post_id,)).fetchone()[0]
+        
+        cursor.execute(f'SELECT {reaction_type} FROM posts WHERE id = %s', (post_id,))
+        new_count = cursor.fetchone()[reaction_type]
         conn.close()
         return jsonify({'success': True, 'new_count': new_count})
     return jsonify({'success': False})
 
-# इन्फिनिट स्क्रॉल API (Slug के साथ)
+# इन्फिनिट स्क्रॉल API
 @app.route('/api/next_post/<int:current_id>/<category>')
 def next_post(current_id, category):
     conn = get_db_connection()
-    post = conn.execute('''
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute('''
         SELECT * FROM posts 
-        WHERE category = ? AND id < ? AND status = 'published' 
+        WHERE category = %s AND id < %s AND status = 'published' 
         ORDER BY id DESC LIMIT 1
-    ''', (category, current_id)).fetchone()
+    ''', (category, current_id))
+    post = cursor.fetchone()
     conn.close()
+    
     if post:
         post_dict = dict(post)
-        post_dict['slug'] = slugify(post['title']) # URL के लिए slug भेज रहे हैं
+        post_dict['slug'] = slugify(post['title'])
         return jsonify(post_dict)
     return jsonify({'error': 'No more posts'})
 
@@ -89,6 +140,8 @@ def next_post(current_id, category):
 @app.route('/my-secret-admin-999', methods=('GET', 'POST'))
 def admin():
     conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
     if request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -96,31 +149,42 @@ def admin():
         status = request.form['status']
         category = request.form['category']
         
-        image_path = ""
+        image_url = ""
+        # 🚀 2. ImgBB API Upload Logic
         if 'image_file' in request.files:
             file = request.files['image_file']
             if file.filename != '':
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image_path = f"/static/uploads/{filename}"
+                payload = {
+                    "key": IMGBB_API_KEY,
+                    "image": base64.b64encode(file.read()).decode('utf-8')
+                }
+                res = requests.post("https://api.imgbb.com/1/upload", data=payload)
+                if res.status_code == 200:
+                    image_url = res.json()['data']['url'] # फोटो का क्लाउड लिंक मिल गया
 
         if title and content:
-            conn.execute('''
+            cursor.execute('''
                 INSERT INTO posts (title, content, image_path, seo_tags, status, category) 
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (title, content, image_path, seo_tags, status, category))
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (title, content, image_url, seo_tags, status, category))
             conn.commit()
             return redirect(url_for('admin'))
 
-    posts = conn.execute('SELECT * FROM posts ORDER BY created_at DESC').fetchall()
-    total_views = conn.execute('SELECT SUM(views) FROM posts').fetchone()[0] or 0
+    cursor.execute('SELECT * FROM posts ORDER BY created_at DESC')
+    posts = cursor.fetchall()
+    
+    cursor.execute('SELECT SUM(views) FROM posts')
+    total_views_result = cursor.fetchone()
+    total_views = total_views_result['sum'] if total_views_result['sum'] else 0
+    
     conn.close()
     return render_template('admin.html', posts=posts, total_views=total_views)
 
 @app.route('/delete/<int:post_id>')
 def delete(post_id):
     conn = get_db_connection()
-    conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM posts WHERE id = %s', (post_id,))
     conn.commit()
     conn.close()
     return redirect(url_for('admin'))
@@ -129,7 +193,9 @@ def delete(post_id):
 @app.route('/sitemap.xml')
 def sitemap():
     conn = get_db_connection()
-    posts = conn.execute("SELECT id, title, created_at FROM posts WHERE status='published' ORDER BY created_at DESC").fetchall()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("SELECT id, title, created_at FROM posts WHERE status='published' ORDER BY created_at DESC")
+    posts = cursor.fetchall()
     conn.close()
     
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -138,8 +204,9 @@ def sitemap():
     
     for post in posts:
         slug = slugify(post["title"])
+        date_str = post["created_at"].strftime('%Y-%m-%d') if post["created_at"] else ""
         xml += f'  <url>\n    <loc>{request.url_root}article/{post["id"]}/{slug}</loc>\n'
-        xml += f'    <lastmod>{post["created_at"][:10]}</lastmod>\n'
+        xml += f'    <lastmod>{date_str}</lastmod>\n'
         xml += f'    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n'
         
     xml += '</urlset>'
