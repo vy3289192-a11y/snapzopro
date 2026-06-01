@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapzo Pro | Premium News</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-red: #e63946;
+            --bg-color: #f4f7f6;
+            --text-dark: #1d3557;
+            --text-light: #457b9d;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); -webkit-font-smoothing: antialiased; }
+
+        /* Premium Sticky Header (Glass Effect) */
+        .header { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px);
+            padding: 15px 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+        }
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--brand-red); }
+        .logo span { color: var(--brand-red); }
+
+        /* Pill-Shaped Category Menu */
+        .nav-menu { 
+            background: var(--white); 
+            padding: 15px 30px; 
+            display: flex; 
+            gap: 12px; 
+            overflow-x: auto; 
+            border-bottom: 1px solid #eef2f5; 
+            scrollbar-width: none; 
+        }
+        .nav-menu::-webkit-scrollbar { display: none; }
+        .nav-pill { 
+            background: #f1f5f9; 
+            color: var(--text-light); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            padding: 8px 18px; 
+            border-radius: 50px; 
+            white-space: nowrap; 
+            transition: all 0.3s ease; 
+            border: 1px solid transparent;
+        }
+        .nav-pill:hover { background: #e2e8f0; color: var(--text-dark); }
+        .nav-pill.active { background: var(--brand-red); color: var(--white); box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
+
+        /* Main Container */
+        .container { max-width: 1250px; margin: 30px auto; padding: 0 20px; }
+
+        /* HERO SECTION (Featured Post) */
+        .hero-section { margin-bottom: 40px; }
+        .hero-card { 
+            position: relative; 
+            width: 100%; 
+            height: 450px; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            display: block; 
+            text-decoration: none; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            transition: transform 0.4s ease;
+        }
+        .hero-card:hover { transform: translateY(-5px); }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { 
+            position: absolute; 
+            bottom: 0; left: 0; right: 0; 
+            height: 70%; 
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 100%); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 40px; 
+        }
+        .hero-badge { 
+            background: var(--brand-red); 
+            color: var(--white); 
+            padding: 6px 14px; 
+            border-radius: 6px; 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            align-self: flex-start; 
+            margin-bottom: 15px; 
+        }
+        .hero-title { color: var(--white); font-size: 2.2rem; font-weight: 800; line-height: 1.3; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .hero-meta { color: #cbd5e1; font-size: 0.9rem; font-weight: 400; display: flex; gap: 15px; }
+
+        /* Section Title */
+        .section-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 25px; color: var(--text-dark); display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: var(--brand-red); }
+
+        /* Premium Grid Cards */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .news-card { 
+            background: var(--white); 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); 
+            transition: all 0.3s ease; 
+            display: flex; 
+            flex-direction: column; 
+            text-decoration: none; 
+            border: 1px solid #f1f5f9;
+        }
+        .news-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: #e2e8f0; }
+        .img-wrapper { position: relative; width: 100%; height: 220px; overflow: hidden; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .news-card:hover .img-wrapper img { transform: scale(1.05); }
+        .card-badge { 
+            position: absolute; 
+            top: 15px; left: 15px; 
+            background: rgba(255, 255, 255, 0.9); 
+            color: var(--brand-red); 
+            font-weight: 800; 
+            font-size: 0.75rem; 
+            padding: 5px 12px; 
+            border-radius: 30px; 
+            text-transform: uppercase; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            backdrop-filter: blur(4px);
+        }
+        .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); line-height: 1.4; margin-bottom: 15px; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 0.85rem; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .read-btn { color: var(--brand-red); font-weight: 700; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .news-card:hover .read-btn { gap: 8px; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); grid-column: 1 / -1; }
+        .empty-state i { font-size: 4rem; color: #cbd5e1; margin-bottom: 20px; }
+        .empty-state h2 { color: var(--text-dark); font-size: 1.5rem; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero-card { height: 350px; }
+            .hero-title { font-size: 1.5rem; }
+            .hero-overlay { padding: 25px; }
+            .header { padding: 15px 20px; }
+        }
+    </style>
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "00000000-0000-0000-0000-000000000000",
+          notifyButton: { enable: true },
+        });
+      });
+    </script>
+</head>
+<body>
+
+    <header class="header">
+        <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
+        <div>
+            <i class="fas fa-search" style="color: var(--text-light); font-size: 1.2rem; cursor: pointer;"></i>
+        </div>
+    </header>
+
+    <nav class="nav-menu">
+        <a href="/" class="nav-pill {% if current_category == 'Home' %}active{% endif %}">🔥 Trending</a>
+        <a href="/category/India" class="nav-pill {% if current_category == 'India' %}active{% endif %}">🇮🇳 India</a>
+        <a href="/category/Car" class="nav-pill {% if current_category == 'Car' %}active{% endif %}">🚗 Auto</a>
+        <a href="/category/Bike" class="nav-pill {% if current_category == 'Bike' %}active{% endif %}">🏍️ Bikes</a>
+        <a href="/category/Mobile" class="nav-pill {% if current_category == 'Mobile' %}active{% endif %}">📱 Tech</a>
+        <a href="/category/Entertainment" class="nav-pill {% if current_category == 'Entertainment' %}active{% endif %}">🎬 Cinema</a>
+    </nav>
+
+    <main class="container">
+        {% if posts %}
+            {% set hero_post = posts[0] %}
+            
+            <section class="hero-section">
+                <a href="/article/{{ hero_post['id'] }}/{{ hero_post['title'] | slugify }}" class="hero-card">
+                    <img src="{{ hero_post['image_path'] or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1000' }}" alt="Featured" class="hero-img">
+                    <div class="hero-overlay">
+                        <span class="hero-badge">Latest Update</span>
+                        <h1 class="hero-title">{{ hero_post['title'] }}</h1>
+                        <div class="hero-meta">
+                            <span><i class="fas fa-folder-open"></i> {{ hero_post['category'] }}</span>
+                            <span><i class="fas fa-eye"></i> {{ hero_post['views'] }} Views</span>
+                        </div>
+                    </div>
+                </a>
+            </section>
+
+            {% if posts|length > 1 %}
+            <h2 class="section-title"><i class="fas fa-fire-flame-curved"></i> Top Stories</h2>
+            <div class="news-grid">
+                {% for post in posts[1:] %}
+                <a href="/article/{{ post['id'] }}/{{ post['title'] | slugify }}" class="news-card">
+                    <div class="img-wrapper">
+                        <span class="card-badge">{{ post['category'] }}</span>
+                        <img src="{{ post['image_path'] or 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&q=80&w=600' }}" alt="News Thumbnail">
+                    </div>
+                    <div class="card-content">
+                        <h2 class="card-title">{{ post['title'] }}</h2>
+                        <div class="card-footer">
+                            <span>{{ post['created_at'][:10] }}</span>
+                            <span class="read-btn">Read More <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h2>अभी तक कोई ताज़ा खबर पब्लिश नहीं हुई है।</h2>
+               
+            </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>
