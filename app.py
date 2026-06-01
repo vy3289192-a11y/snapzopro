@@ -62,7 +62,7 @@ init_db()
 def index():
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cursor.execute("SELECT * FROM posts WHERE status='published' ORDER BY created_at DESC")
+    cursor.execute("SELECT * FROM posts WHERE status='published' ORDER BY created_at DESC LIMIT 15")
     posts = cursor.fetchall()
     conn.close()
     return render_template('index.html', posts=posts, current_category='Home')
