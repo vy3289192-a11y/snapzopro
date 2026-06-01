@@ -51,7 +51,7 @@
             font-size: 1.5rem; 
             color: var(--text-dark); 
             cursor: pointer; 
-            display: none; /* PC पर छुपा रहेगा */
+            display: none;
         }
 
         .logo { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); text-decoration: none; display: flex; align-items: center; gap: 8px; }
@@ -137,8 +137,8 @@
         @media (max-width: 768px) {
             .header { padding: 15px 20px; }
             .logo { font-size: 1.5rem; }
-            .hamburger-btn { display: block; } /* मोबाइल पर हैमबर्गर दिखेगा */
-            .nav-menu { display: none; } /* मोबाइल पर पिल्स छुप जाएंगे */
+            .hamburger-btn { display: block; }
+            .nav-menu { display: none; }
             
             .hero-card { height: 320px; border-radius: 12px; }
             .hero-title { font-size: 1.4rem; }
@@ -157,8 +157,9 @@
             <i class="fas fa-bars hamburger-btn" id="menuBtn"></i>
             <a href="/" class="logo"><i class="fas fa-bolt"></i> Snapzo <span>Pro</span></a>
         </div>
-       <div style="display: flex; align-items: center; position: relative;">
-            <form action="/search" method="GET" id="searchBox" style="display: none; position: absolute; right: 30px; background: white; padding: 5px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eef2f5;">
+        
+        <div style="display: flex; align-items: center; position: relative;">
+            <form action="/search" method="GET" id="searchBox" style="display: none; position: absolute; right: 30px; background: white; padding: 5px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #eef2f5; z-index: 100;">
                 <input type="text" name="q" placeholder="खबरें सर्च करें..." required style="border: none; outline: none; font-size: 0.95rem; width: 150px; background: transparent; color: var(--text-dark);">
                 <button type="submit" style="background: none; border: none; color: var(--brand-red); cursor: pointer; font-size: 1.1rem;"><i class="fas fa-arrow-right"></i></button>
             </form>
@@ -192,9 +193,15 @@
     </nav>
 
     <main class="container">
+        
+        {% if 'Search' in current_category %}
+            <h2 class="section-title"><i class="fas fa-search"></i> {{ current_category }}</h2>
+        {% endif %}
+
         {% if posts %}
-            {% set hero_post = posts[0] %}
             
+            {% if 'Search' not in current_category %}
+            {% set hero_post = posts[0] %}
             <section class="hero-section">
                 <a href="/article/{{ hero_post['id'] }}/{{ hero_post['title'] | slugify }}" class="hero-card">
                     <img src="{{ hero_post['image_path'] or 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1000' }}" alt="Featured" class="hero-img">
@@ -208,11 +215,16 @@
                     </div>
                 </a>
             </section>
+            {% endif %}
 
-            {% if posts|length > 1 %}
-            <h2 class="section-title"><i class="fas fa-fire-flame-curved"></i> Top Stories</h2>
+            {% if posts|length > 1 or 'Search' in current_category %}
+            {% if 'Search' not in current_category %}
+                <h2 class="section-title"><i class="fas fa-fire-flame-curved"></i> Top Stories</h2>
+            {% endif %}
+            
             <div class="news-grid">
-                {% for post in posts[1:] %}
+                {% set grid_posts = posts if 'Search' in current_category else posts[1:] %}
+                {% for post in grid_posts %}
                 <a href="/article/{{ post['id'] }}/{{ post['title'] | slugify }}" class="news-card">
                     <div class="img-wrapper">
                         <span class="card-badge">{{ post['category'] }}</span>
@@ -221,7 +233,7 @@
                     <div class="card-content">
                         <h2 class="card-title">{{ post['title'] }}</h2>
                         <div class="card-footer">
-                            <span>{{ post['created_at'][:10] }}</span>
+                            <span>{{ post['created_at'].strftime('%Y-%m-%d') if post['created_at'] else 'Recently' }}</span>
                             <span class="read-btn">Read More <i class="fas fa-arrow-right"></i></span>
                         </div>
                     </div>
@@ -233,12 +245,19 @@
         {% else %}
             <div class="empty-state">
                 <i class="fas fa-newspaper"></i>
-                <h2>अभी तक कोई ताज़ा खबर पब्लिश नहीं हुई है।</h2>
+                {% if 'Search' in current_category %}
+                    <h2>कोई खबर नहीं मिली!</h2>
+                    <p style="color: #94a3b8; margin-top: 10px;">कृपया कोई दूसरा शब्द लिखकर सर्च करें।</p>
+                {% else %}
+                    <h2>अभी तक कोई ताज़ा खबर पब्लिश नहीं हुई है।</h2>
+                    <p style="color: #94a3b8; margin-top: 10px;">एडमिन पैनल में जाकर पहली खबर डालें।</p>
+                {% endif %}
             </div>
         {% endif %}
     </main>
 
     <script>
+        // 🚀 Mobile Menu Logic
         const menuBtn = document.getElementById('menuBtn');
         const closeBtn = document.getElementById('closeBtn');
         const drawer = document.getElementById('drawer');
@@ -247,13 +266,27 @@
         function toggleMenu() {
             drawer.classList.toggle('active');
             overlay.classList.toggle('active');
-            // Menu खुलने पर बैकग्राउंड स्क्रॉल डिसेबल करें
             document.body.style.overflow = drawer.classList.contains('active') ? 'hidden' : '';
         }
 
         menuBtn.addEventListener('click', toggleMenu);
         closeBtn.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', toggleMenu);
+
+        // 🚀 Search Box Logic
+        const searchIcon = document.getElementById('searchIcon');
+        const searchBox = document.getElementById('searchBox');
+
+        searchIcon.addEventListener('click', () => {
+            if (searchBox.style.display === 'none') {
+                searchBox.style.display = 'flex';
+                searchIcon.style.color = 'var(--brand-red)';
+                searchBox.querySelector('input').focus();
+            } else {
+                searchBox.style.display = 'none';
+                searchIcon.style.color = 'var(--text-light)';
+            }
+        });
     </script>
 </body>
 </html>
