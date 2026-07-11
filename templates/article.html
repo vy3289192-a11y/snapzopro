@@ -62,7 +62,19 @@
         .card-title { font-size: 1.1rem; color: #1e293b; font-weight: 700; }
         
         .loader { text-align: center; padding: 30px; color: #e63946; font-weight: bold; font-size: 1.2rem; display: none; }
-        @media (max-width: 768px) { .article-block { padding: 20px; } .title { font-size: 1.7rem; } }
+        
+        /* --- NEW: Legal Pages Modal CSS --- */
+        .legal-modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); }
+        .legal-modal-content { background-color: #fff; margin: 5% auto; padding: 0; border-radius: 12px; width: 90%; max-width: 700px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); animation: modalFadeIn 0.3s; overflow: hidden; }
+        .legal-modal-header { background: #0f172a; color: white; padding: 20px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #e63946; }
+        .legal-modal-header h2 { margin: 0; font-size: 1.5rem; }
+        .legal-close { color: #cbd5e1; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .legal-close:hover { color: #e63946; }
+        .legal-modal-body { padding: 30px 25px; max-height: 70vh; overflow-y: auto; color: #475569; line-height: 1.8; font-size: 1rem; }
+        .legal-modal-body h3 { color: #1d3557; margin-top: 20px; margin-bottom: 10px; font-size: 1.2rem; }
+        @keyframes modalFadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+        
+        @media (max-width: 768px) { .article-block { padding: 20px; } .title { font-size: 1.7rem; } .legal-modal-content { margin: 10% auto; width: 95%; } }
     </style>
 </head>
 <body>
@@ -118,7 +130,72 @@
 
     <div class="loader" id="loading-spinner"><i class="fas fa-spinner fa-spin"></i> अगली खबर लोड हो रही है...</div>
 
+    <div id="legalModal" class="legal-modal">
+        <div class="legal-modal-content">
+            <div class="legal-modal-header">
+                <h2 id="modalTitle">Title</h2>
+                <span class="legal-close" onclick="closeLegalModal()">&times;</span>
+            </div>
+            <div class="legal-modal-body" id="modalBody">
+                </div>
+        </div>
+    </div>
+
     <script>
+        // --- NEW: Legal Pages Modal JS Logic ---
+        const legalData = {
+            disclaimer: {
+                title: "Disclaimer & Rules",
+                content: `<h3>General Disclaimer</h3>
+                          <p>The information provided by Snapzo Pro ("we," "us," or "our") on our website is for general informational purposes only. All information on the site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, or completeness of any news or information.</p>
+                          <h3>External Links</h3>
+                          <p>The Site may contain links to other websites or content belonging to or originating from third parties. Such external links are not investigated, monitored, or checked for accuracy, adequacy, validity, reliability, availability, or completeness by us.</p>
+                          <h3>Rules of Conduct</h3>
+                          <p>By using Snapzo Pro, you agree not to post spam, abusive, or hate speech comments. We reserve the right to remove any user who violates these rules.</p>`
+            },
+            privacy: {
+                title: "Privacy Policy",
+                content: `<h3>Introduction</h3>
+                          <p>At Snapzo Pro, accessible from snapzopro.online, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by us and how we use it.</p>
+                          <h3>Log Files & Cookies</h3>
+                          <p>Snapzo Pro follows a standard procedure of using log files. These files log visitors when they visit websites. Like any other website, we use 'cookies' to store information including visitors' preferences, and the pages on the website that the visitor accessed or visited to optimize the users' experience.</p>
+                          <h3>Google AdSense</h3>
+                          <p>Google is a third-party vendor on our site. It uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy.</p>`
+            },
+            contact: {
+                title: "Contact Us",
+                content: `<h3>Get In Touch</h3>
+                          <p>We would love to hear from you! If you have any questions, feedback, or business inquiries, feel free to reach out to the Snapzo Pro team.</p>
+                          <h3>Contact Information</h3>
+                          <p><strong>Email (Support):</strong> support@snapzopro.online<br>
+                             <strong>Email (Business):</strong> business@snapzopro.online</p>
+                          <p>We aim to respond to all emails within 24-48 business hours.</p>
+                          <h3>Social Media</h3>
+                          <p>Follow us on our social platforms for the latest updates and breaking news alerts directly to your phone!</p>`
+            }
+        };
+
+        function openLegalModal(page) {
+            document.getElementById("modalTitle").innerText = legalData[page].title;
+            document.getElementById("modalBody").innerHTML = legalData[page].content;
+            document.getElementById("legalModal").style.display = "block";
+            document.body.style.overflow = 'hidden'; // Stop background scrolling
+        }
+
+        function closeLegalModal() {
+            document.getElementById("legalModal").style.display = "none";
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("legalModal");
+            if (event.target == modal) {
+                closeLegalModal();
+            }
+        }
+
+        // Existing Article Scripts...
         async function react(postId, type, btnElement) {
             try {
                 let response = await fetch(`/react/${postId}/${type}`, { method: 'POST' });
@@ -151,13 +228,12 @@
                 const data = await response.json();
                 
                 if (data.error) {
-                    // 🚀 यहाँ पर मैंने आपका नया डिज़ाइन डाला है
                     document.getElementById('loading-spinner').innerHTML = `
                     <div id="endMessage" style="text-align: center; padding: 30px 20px; background: white; border-radius: 12px; margin-top: 30px; border: 1px solid #eef2f5; box-shadow: 0 5px 15px rgba(0,0,0,0.03);">
                         <h3 style="font-size: 1.3rem; color: #1d3557; margin-bottom: 10px; font-weight: 800;">
-                            ✅ आपने इस कैटेगरी की सारी ख़बरें पढ़ ली हैं!
+                            ✅ आपने इस कैटेगरी की सारी ख़बरें पढ़ ली हैं!
                         </h3>
-                        <p style="font-size: 1rem; color: #457b9d; margin-bottom: 25px;">अब आगे क्या पढ़ना चाहेंगे? 👇</p>
+                        <p style="font-size: 1rem; color: #457b9d; margin-bottom: 25px;">अब आगे क्या पढ़ना चाहेंगे? 👇</p>
                         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;">
                             <a href="/" onmouseover="this.style.background='#e63946'; this.style.color='white'" onmouseout="this.style.background='#fff1f2'; this.style.color='#e63946'" style="background: #fff1f2; color: #e63946; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 700; border: 1px solid #ffe4e6; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
                                 <i class="fas fa-fire"></i> Trending
@@ -181,7 +257,6 @@
 
                 currentPostId = data.id; 
                 
-                // 🚀 PRO TRICK: स्क्रॉल करते ही ऊपर ब्राउज़र का लिंक अपने-आप बदल जाएगा
                 window.history.pushState(null, '', '/article/' + data.id + '/' + data.slug);
                 
                 const feed = document.getElementById('infinite-feed');
@@ -210,19 +285,20 @@
             }
         }
     </script>
-<footer style="background: #0f172a; color: white; padding: 40px 20px; text-align: center; margin-top: 60px; border-top: 4px solid #e63946;">
+    
+    <footer style="background: #0f172a; color: white; padding: 40px 20px; text-align: center; margin-top: 60px; border-top: 4px solid #e63946;">
         <div style="max-width: 900px; margin: 0 auto;">
             <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 15px; color: white;">
                 <i class="fas fa-bolt" style="color:#e63946;"></i> Snapzo <span style="color:#e63946;">Pro</span>
             </h2>
             <p style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">
-                Snapzo Pro भारत की तेज़ी से उभरती हुई न्यूज़ वेबसाइट है। हम ट्रेंडिंग न्यूज़, ऑटोमोबाइल, और टेक जगत की रोचक ख़बरें आप तक पहुँचाते हैं।
+                Snapzo Pro भारत की तेज़ी से उभरती हुई न्यूज़ वेबसाइट है। हम ट्रेंडिंग न्यूज़, ऑटोमोबाइल, और टेक जगत की रोचक ख़बरें आप तक पहुँचाते हैं।
             </p>
             
             <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
-                <a href="/disclaimer" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Disclaimer & Rules</a>
-                <a href="/disclaimer" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Privacy Policy</a>
-                <a href="mailto:contact@snapzopro.online" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Contact Us</a>
+                <a href="javascript:void(0)" onclick="openLegalModal('disclaimer')" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Disclaimer & Rules</a>
+                <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Privacy Policy</a>
+                <a href="javascript:void(0)" onclick="openLegalModal('contact')" style="color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s;" onmouseover="this.style.color='#e63946'" onmouseout="this.style.color='#cbd5e1'">Contact Us</a>
             </div>
             
             <div style="color: #475569; font-size: 0.85rem; border-top: 1px solid #1e293b; padding-top: 20px;">
