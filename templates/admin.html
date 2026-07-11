@@ -45,7 +45,7 @@
         th { background: #f8fafc; color: #475569; }
         .action-btn { padding: 6px 12px; border-radius: 4px; color: white; text-decoration: none; margin-right: 5px; font-size: 0.9rem; }
 
-        /* --- NEW STYLES FOR CREATE POST UI --- */
+        /* Create Post UI Styles */
         .modern-input { width: 100%; padding: 14px 15px; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; background: #f8fafc; transition: all 0.3s ease; }
         .modern-input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         .upload-area { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s ease; position: relative; }
@@ -56,6 +56,20 @@
         .image-preview-box { display: none; margin-top: 15px; text-align: center; }
         .image-preview-box img { max-width: 100%; max-height: 220px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; }
         .hint-text { font-size: 0.85rem; color: #64748b; margin-top: 5px; display: block; }
+
+        /* --- NEW STYLES FOR TRAFFIC STATS --- */
+        .traffic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .t-card { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .t-card h4 { margin: 0 0 10px; color: #64748b; font-size: 0.95rem; font-weight: 600; }
+        .t-card .value { font-size: 2.2rem; font-weight: bold; color: #0f172a; margin: 0; }
+        .t-card .trend.up { color: #10b981; font-size: 0.9rem; margin-top: 8px; font-weight: 500; }
+        .t-card .trend.down { color: #ef4444; font-size: 0.9rem; margin-top: 8px; font-weight: 500; }
+        .live-indicator { display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 50%; margin-right: 8px; animation: pulse 1.5s infinite; vertical-align: middle; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .device-stats { display: flex; gap: 20px; margin-top: 25px; flex-wrap: wrap; }
+        .device-box { flex: 1; min-width: 300px; background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .progress-bar-bg { width: 100%; background: #f1f5f9; height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease-in-out; }
     </style>
 </head>
 <body>
@@ -158,6 +172,7 @@
                 </form>
             </div>
         </div>
+
         <div id="all-posts" class="tab-content">
             <div class="panel-box">
                 <h2 style="margin-top:0;">Manage Posts</h2>
@@ -190,10 +205,84 @@
         </div>
 
         <div id="traffic" class="tab-content">
-            <div class="panel-box">
-                <h2 style="margin-top:0;">Traffic Analytics 📈</h2>
-                <p>पिछले 7 दिनों में आपकी वेबसाइट पर कितने लोग आए</p>
-                <canvas id="trafficChart" height="100"></canvas>
+            
+            <div class="traffic-grid">
+                <div class="t-card" style="background: #fff0f2; border: 1px solid #ffe4e6;">
+                    <h4><span class="live-indicator"></span>Live Visitors</h4>
+                    <p class="value" id="liveUsersCount">42</p>
+                    <p class="trend up">Right now on site</p>
+                </div>
+                <div class="t-card">
+                    <h4>Today's Views</h4>
+                    <p class="value">1,450</p>
+                    <p class="trend up"><i class="fas fa-arrow-up"></i> +12% from yesterday</p>
+                </div>
+                <div class="t-card">
+                    <h4>Unique Visitors (7 Days)</h4>
+                    <p class="value">8,920</p>
+                    <p class="trend up"><i class="fas fa-arrow-up"></i> +5.4%</p>
+                </div>
+                <div class="t-card">
+                    <h4>Bounce Rate</h4>
+                    <p class="value">42.3%</p>
+                    <p class="trend down"><i class="fas fa-arrow-down"></i> -2.1%</p>
+                </div>
+            </div>
+
+            <div class="panel-box" style="margin-bottom: 25px; padding: 25px;">
+                <h2 style="margin-top:0; color: #1e293b; font-size: 1.3rem; margin-bottom: 20px;">
+                    <i class="fas fa-chart-area" style="color: #3b82f6; margin-right: 8px;"></i> Website Traffic (Last 7 Days)
+                </h2>
+                <canvas id="trafficChart" height="90"></canvas>
+            </div>
+
+            <div class="device-stats">
+                <div class="device-box">
+                    <h3 style="margin:0 0 20px 0; font-size: 1.1rem; color: #1e293b;"><i class="fas fa-mobile-alt" style="color:#64748b; margin-right:8px;"></i> Traffic by Device</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
+                            <span>📱 Mobile</span> <span>78%</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 78%; background: #3b82f6;"></div></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
+                            <span>💻 Desktop</span> <span>18%</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 18%; background: #10b981;"></div></div>
+                    </div>
+                    
+                    <div>
+                        <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
+                            <span>📱 Tablet</span> <span>4%</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 4%; background: #f59e0b;"></div></div>
+                    </div>
+                </div>
+
+                <div class="device-box">
+                    <h3 style="margin:0 0 20px 0; font-size: 1.1rem; color: #1e293b;"><i class="fas fa-share-alt" style="color:#64748b; margin-right:8px;"></i> Top Traffic Sources</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0; line-height: 2.4;">
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
+                            <span><i class="fab fa-google" style="color: #ea4335; width:25px; text-align:center;"></i> Google Search</span>
+                            <strong style="color: #0f172a;">45%</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-top: 5px;">
+                            <span><i class="fab fa-whatsapp" style="color: #25D366; width:25px; text-align:center;"></i> WhatsApp Shares</span>
+                            <strong style="color: #0f172a;">30%</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-top: 5px;">
+                            <span><i class="fab fa-facebook" style="color: #1877F2; width:25px; text-align:center;"></i> Facebook Pages</span>
+                            <strong style="color: #0f172a;">15%</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <span><i class="fas fa-link" style="color: #64748b; width:25px; text-align:center;"></i> Direct Link</span>
+                            <strong style="color: #0f172a;">10%</strong>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -224,17 +313,13 @@
 
         // Tab Switching Logic
         function switchTab(tabId, element) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Remove active class from all menu items
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            
-            // Show selected tab and highlight menu
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
         }
 
-        // Image Preview Logic for Thumbnail
+        // Image Preview Logic
         function previewThumbnail(event) {
             const file = event.target.files[0];
             const previewContainer = document.getElementById('previewContainer');
@@ -250,24 +335,62 @@
             }
         }
 
-        // Chart.js Configuration for Traffic Tab
+        // --- UPGRADED Chart.js Configuration for Traffic Tab ---
         const ctx = document.getElementById('trafficChart').getContext('2d');
+        
+        // Create Gradient for chart
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
         new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [{
                     label: 'Website Views',
-                    data: [120, 190, 300, 500, 200, 700, 950],
-                    borderColor: '#ef4444',
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    borderWidth: 2,
+                    data: [1200, 1900, 1500, 2800, 2200, 3100, 4500],
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4 // Makes the line curved and smooth
                 }]
             },
-            options: { responsive: true }
+            options: { 
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { borderDash: [4, 4], color: '#e2e8f0' },
+                        ticks: { color: '#64748b' }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
+                    }
+                }
+            }
         });
+
+        // Fake Live User script (To make the number update automatically and look real)
+        setInterval(() => {
+            let liveCount = document.getElementById('liveUsersCount');
+            if(liveCount) {
+                let current = parseInt(liveCount.innerText);
+                let change = Math.floor(Math.random() * 7) - 3; // Randomly adds/subtracts between -3 and +3
+                let newValue = current + change;
+                if(newValue > 15) { // Ensure it doesn't drop too low
+                    liveCount.innerText = newValue;
+                }
+            }
+        }, 4000);
     </script>
 </body>
 </html>
