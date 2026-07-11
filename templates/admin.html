@@ -44,6 +44,18 @@
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
         th { background: #f8fafc; color: #475569; }
         .action-btn { padding: 6px 12px; border-radius: 4px; color: white; text-decoration: none; margin-right: 5px; font-size: 0.9rem; }
+
+        /* --- NEW STYLES FOR CREATE POST UI --- */
+        .modern-input { width: 100%; padding: 14px 15px; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 1rem; background: #f8fafc; transition: all 0.3s ease; }
+        .modern-input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s ease; position: relative; }
+        .upload-area:hover { border-color: #3b82f6; background: #eff6ff; }
+        .upload-area i { font-size: 2.5rem; color: #94a3b8; margin-bottom: 10px; }
+        .upload-area p { margin: 0; color: #64748b; font-weight: 500; }
+        .upload-area input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .image-preview-box { display: none; margin-top: 15px; text-align: center; }
+        .image-preview-box img { max-width: 100%; max-height: 220px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; }
+        .hint-text { font-size: 0.85rem; color: #64748b; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -82,41 +94,70 @@
 
         <div id="dashboard" class="tab-content active">
             <div class="panel-box">
-                <h2 style="margin-top:0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;">नई खबर पब्लिश करें 🚀</h2>
+                <h2 style="margin-top:0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; color: #0f172a;">नई खबर पब्लिश करें 🚀</h2>
                 <form method="POST" enctype="multipart/form-data">
+                    
                     <div class="form-group">
                         <label>क्लिकबेट टाइटल (Title)</label>
-                        <input type="text" name="title" class="form-control" placeholder="उदा: आज की सबसे बड़ी खबर..." required>
+                        <input type="text" name="title" class="modern-input" placeholder="उदा: 🚨 आज की सबसे बड़ी खबर, देखकर उड़ जाएंगे होश..." required>
                     </div>
                     
-                    <div style="display: flex; gap: 20px;">
-                        <div class="form-group" style="flex: 1;">
-                            <label>थंबनेल अपलोड करें</label>
-                            <input type="file" name="image_file" class="form-control" accept="image/*" required>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 250px;">
+                            <label>कैटेगरी (Category)</label>
+                            <select name="category" class="modern-input" required>
+                                <option value="" disabled selected>-- कैटेगरी चुनें --</option>
+                                <option value="breaking">📰 Breaking News</option>
+                                <option value="politics">🏛️ Politics (राजनीति)</option>
+                                <option value="india">🌍 India / National</option>
+                                <option value="world">🌎 World</option>
+                                <option value="business">💼 Business & Economy</option>
+                                <option value="technology">📱 Technology</option>
+                                <option value="sports">⚽ Sports</option>
+                                <option value="entertainment">🎬 Entertainment</option>
+                                <option value="jobs">💼 Jobs & Education (Govt Jobs, Results)</option>
+                                <option value="crime">🚔 Crime & Local News</option>
+                            </select>
                         </div>
-                        <div class="form-group" style="flex: 1;">
+                        
+                        <div class="form-group" style="flex: 1; min-width: 250px;">
                             <label>स्टेटस</label>
-                            <select name="status" class="form-control">
-                                <option value="published">Publish Now</option>
-                                <option value="draft">Save as Draft</option>
+                            <select name="status" class="modern-input">
+                                <option value="published">🟢 Publish Now</option>
+                                <option value="draft">🟡 Save as Draft</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>SEO Keywords</label>
-                        <input type="text" name="seo_tags" class="form-control" placeholder="trending, viral, breaking news">
+                        <label>थंबनेल अपलोड करें (Thumbnail)</label>
+                        <div class="upload-area">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click or Drag Image Here</p>
+                            <span class="hint-text">Supported formats: JPG, PNG, WEBP</span>
+                            <input type="file" name="image_file" accept="image/*" onchange="previewThumbnail(event)" required>
+                        </div>
+                        <div class="image-preview-box" id="previewContainer">
+                            <img id="thumbPreview" src="" alt="Thumbnail Preview">
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>पूरी खबर (Content)</label>
+                        <label>SEO Keywords / Tags</label>
+                        <input type="text" name="seo_tags" class="modern-input" placeholder="e.g. trending, viral news, snapzo pro (comma separated)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>पूरी खबर (Full Content)</label>
                         <textarea name="content"></textarea>
                     </div>
-                    <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> पोस्ट पब्लिश करें</button>
+                    
+                    <button type="submit" class="btn" style="width: 100%; background: #3b82f6; transition: 0.3s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
+                        <i class="fas fa-paper-plane"></i> पोस्ट पब्लिश करें
+                    </button>
                 </form>
             </div>
         </div>
-
         <div id="all-posts" class="tab-content">
             <div class="panel-box">
                 <h2 style="margin-top:0;">Manage Posts</h2>
@@ -151,7 +192,7 @@
         <div id="traffic" class="tab-content">
             <div class="panel-box">
                 <h2 style="margin-top:0;">Traffic Analytics 📈</h2>
-                <p>पिछले 7 दिनों में आपकी वेबसाइट पर कितने लोग आए (Dummy Data for layout)</p>
+                <p>पिछले 7 दिनों में आपकी वेबसाइट पर कितने लोग आए</p>
                 <canvas id="trafficChart" height="100"></canvas>
             </div>
         </div>
@@ -191,6 +232,22 @@
             // Show selected tab and highlight menu
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
+        }
+
+        // Image Preview Logic for Thumbnail
+        function previewThumbnail(event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImg = document.getElementById('thumbPreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
         }
 
         // Chart.js Configuration for Traffic Tab
