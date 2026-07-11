@@ -102,7 +102,7 @@
             </div>
             <div class="card" style="border-left-color: #10b981;">
                 <h3>Active Users (Live)</h3>
-                <h2><i class="fas fa-circle" style="color: #10b981; font-size: 1rem;"></i> 14</h2>
+                <h2><i class="fas fa-circle" style="color: #10b981; font-size: 1rem;"></i> {{ live_visitors | default('0') }}</h2>
             </div>
         </div>
 
@@ -209,23 +209,23 @@
             <div class="traffic-grid">
                 <div class="t-card" style="background: #fff0f2; border: 1px solid #ffe4e6;">
                     <h4><span class="live-indicator"></span>Live Visitors</h4>
-                    <p class="value" id="liveUsersCount">42</p>
+                    <p class="value" id="liveUsersCount">{{ live_visitors | default('0') }}</p>
                     <p class="trend up">Right now on site</p>
                 </div>
                 <div class="t-card">
                     <h4>Today's Views</h4>
-                    <p class="value">1,450</p>
-                    <p class="trend up"><i class="fas fa-arrow-up"></i> +12% from yesterday</p>
+                    <p class="value">{{ today_views | default('0') }}</p>
+                    <p class="trend up"><i class="fas fa-arrow-up"></i> Updated today</p>
                 </div>
                 <div class="t-card">
                     <h4>Unique Visitors (7 Days)</h4>
-                    <p class="value">8,920</p>
-                    <p class="trend up"><i class="fas fa-arrow-up"></i> +5.4%</p>
+                    <p class="value">{{ unique_visitors | default('0') }}</p>
+                    <p class="trend up"><i class="fas fa-chart-line"></i> Total Traffic</p>
                 </div>
                 <div class="t-card">
                     <h4>Bounce Rate</h4>
-                    <p class="value">42.3%</p>
-                    <p class="trend down"><i class="fas fa-arrow-down"></i> -2.1%</p>
+                    <p class="value">{{ bounce_rate | default('0') }}%</p>
+                    <p class="trend down"><i class="fas fa-info-circle"></i> User retention</p>
                 </div>
             </div>
 
@@ -242,23 +242,23 @@
                     
                     <div style="margin-bottom: 15px;">
                         <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
-                            <span>📱 Mobile</span> <span>78%</span>
+                            <span>📱 Mobile</span> <span>{{ mobile_percent | default('0') }}%</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 78%; background: #3b82f6;"></div></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {{ mobile_percent | default('0') }}%; background: #3b82f6;"></div></div>
                     </div>
                     
                     <div style="margin-bottom: 15px;">
                         <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
-                            <span>💻 Desktop</span> <span>18%</span>
+                            <span>💻 Desktop</span> <span>{{ desktop_percent | default('0') }}%</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 18%; background: #10b981;"></div></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {{ desktop_percent | default('0') }}%; background: #10b981;"></div></div>
                     </div>
                     
                     <div>
                         <div style="display:flex; justify-content: space-between; font-size: 0.95rem; font-weight: 500; color: #475569;">
-                            <span>📱 Tablet</span> <span>4%</span>
+                            <span>📱 Tablet</span> <span>{{ tablet_percent | default('0') }}%</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 4%; background: #f59e0b;"></div></div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {{ tablet_percent | default('0') }}%; background: #f59e0b;"></div></div>
                     </div>
                 </div>
 
@@ -267,19 +267,19 @@
                     <ul style="list-style: none; padding: 0; margin: 0; line-height: 2.4;">
                         <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
                             <span><i class="fab fa-google" style="color: #ea4335; width:25px; text-align:center;"></i> Google Search</span>
-                            <strong style="color: #0f172a;">45%</strong>
+                            <strong style="color: #0f172a;">{{ google_traffic | default('0') }}%</strong>
                         </li>
                         <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-top: 5px;">
                             <span><i class="fab fa-whatsapp" style="color: #25D366; width:25px; text-align:center;"></i> WhatsApp Shares</span>
-                            <strong style="color: #0f172a;">30%</strong>
+                            <strong style="color: #0f172a;">{{ whatsapp_traffic | default('0') }}%</strong>
                         </li>
                         <li style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-top: 5px;">
                             <span><i class="fab fa-facebook" style="color: #1877F2; width:25px; text-align:center;"></i> Facebook Pages</span>
-                            <strong style="color: #0f172a;">15%</strong>
+                            <strong style="color: #0f172a;">{{ facebook_traffic | default('0') }}%</strong>
                         </li>
                         <li style="display: flex; justify-content: space-between; margin-top: 5px;">
                             <span><i class="fas fa-link" style="color: #64748b; width:25px; text-align:center;"></i> Direct Link</span>
-                            <strong style="color: #0f172a;">10%</strong>
+                            <strong style="color: #0f172a;">{{ direct_traffic | default('0') }}%</strong>
                         </li>
                     </ul>
                 </div>
@@ -335,21 +335,24 @@
             }
         }
 
-        // --- UPGRADED Chart.js Configuration for Traffic Tab ---
+        // --- REAL DATA Chart.js Configuration ---
         const ctx = document.getElementById('trafficChart').getContext('2d');
         
-        // Create Gradient for chart
         let gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
         gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
 
+        // These variables will receive real data from your Python Backend (Flask)
+        const chartLabels = {{ chart_labels | default("['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']") | safe }};
+        const chartDataPoints = {{ chart_data | default("[0, 0, 0, 0, 0, 0, 0]") | safe }};
+
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels: chartLabels,
                 datasets: [{
                     label: 'Website Views',
-                    data: [1200, 1900, 1500, 2800, 2200, 3100, 4500],
+                    data: chartDataPoints,
                     borderColor: '#3b82f6',
                     backgroundColor: gradient,
                     borderWidth: 3,
@@ -359,7 +362,7 @@
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     fill: true,
-                    tension: 0.4 // Makes the line curved and smooth
+                    tension: 0.4 
                 }]
             },
             options: { 
@@ -378,19 +381,8 @@
                 }
             }
         });
-
-        // Fake Live User script (To make the number update automatically and look real)
-        setInterval(() => {
-            let liveCount = document.getElementById('liveUsersCount');
-            if(liveCount) {
-                let current = parseInt(liveCount.innerText);
-                let change = Math.floor(Math.random() * 7) - 3; // Randomly adds/subtracts between -3 and +3
-                let newValue = current + change;
-                if(newValue > 15) { // Ensure it doesn't drop too low
-                    liveCount.innerText = newValue;
-                }
-            }
-        }, 4000);
+        
+        // (Fake Javascript Timer Removed as per request)
     </script>
 </body>
 </html>
