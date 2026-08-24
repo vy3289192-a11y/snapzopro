@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Pro Product Card CSS */
+    .pro-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+    }
+
+    .pro-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        border-color: transparent;
+    }
+
+    .img-container {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .img-container img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+
+    .pro-card:hover .img-container img {
+        transform: scale(1.08);
+    }
+
+    /* Badges & Icons */
+    .badge-discount {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #ff9f00;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 4px;
+        z-index: 2;
+    }
+
+    .wishlist-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #fff;
+        color: #ccc;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 2;
+        transition: all 0.2s ease;
+    }
+    
+    .wishlist-icon:hover { color: #ff4757; transform: scale(1.1); }
+
+    .card-title {
+        font-weight: 600;
+        height: 42px;
+        overflow: hidden;
+        font-size: 15px;
+        line-height: 1.4;
+        color: #1c1c1c;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .price-section {
+        margin-top: auto;
+        padding-top: 12px;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
+
+    .price-current { color: #212121; font-size: 20px; font-weight: 800; }
+    .price-mrp { text-decoration: line-through; color: #878787; font-size: 13px; font-weight: 500; }
+    .price-off { color: #388e3c; font-size: 13px; font-weight: 800; letter-spacing: 0.5px; }
+</style>
+
+<div style="text-align: center; padding: 20px;">
+    
+    {% if current_category == 'All Products' %}
+    <div style="margin: 10px auto 30px; max-width: 1250px;">
+        <img src="{{ url_for('static', filename='hero-banner.png') }}" 
+             alt="VISTAN Premium Offers" 
+             style="width: 100%; border-radius: 16px; box-shadow: 0 8px 25px rgba(40, 116, 240, 0.15); height: 320px; object-fit: cover;"
+             onerror="this.src='https://via.placeholder.com/1250x320/2874f0/ffffff?text=VISTAN+PREMIUM+OFFERS'">
+    </div>
+    {% endif %}
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1250px; margin: 0 auto 25px; padding: 0 20px;">
+        <h2 style="margin: 0; font-size: 22px; color: #1c1c1c; font-weight: 800;">
+            Trending in <span style="color: #2874f0;">{{ current_category }}</span>
+        </h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; max-width: 1250px; margin: 0 auto; padding: 0 20px;">
+        {% if products %}
+            {% for p in products %}
+            <a href="/product/{{ p.id }}" class="pro-card">
+                <div class="img-container">
+                    {% if p.mrp > p.selling_price %}
+                        <div class="badge-discount">{{ p.discount_percent }}% OFF</div>
+                    {% endif %}
+                    
+                    <form action="/wishlist/toggle/{{ p.id }}" method="POST" style="margin: 0;">
+                        <button type="submit" class="wishlist-icon" style="border: none; cursor: pointer; padding: 0;">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </form>
+                    
+                    <img src="{{ p.image_url }}" alt="{{ p.name }}">
+                </div>
+                
+                <div class="card-title">{{ p.name }}</div>
+                
+                <div class="price-section">
+                    <span class="price-current">₹{{ p.selling_price }}</span>
+                    {% if p.mrp > p.selling_price %}
+                        <span class="price-mrp">₹{{ p.mrp }}</span>
+                        <span class="price-off">{{ p.discount_percent }}% off</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div style="grid-column: 1/-1; padding: 80px; text-align: center; background: #fff; border-radius: 12px; border: 1px dashed #ccc;">
+                <i class="fas fa-box-open" style="font-size: 40px; color: #ccc; margin-bottom: 15px;"></i>
+                <h3 style="color: #555; margin: 0;">No products found in this category.</h3>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

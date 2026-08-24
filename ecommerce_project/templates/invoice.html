@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice - Order #{{ order.id }}</title>
+    <style>
+        body { font-family: Arial; padding: 40px; color: #333; }
+        .bill-box { border: 1px solid #eee; padding: 30px; max-width: 800px; margin: auto; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #2874f0; padding-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        .total { text-align: right; margin-top: 20px; font-size: 20px; font-weight: bold; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="text-align:center; margin-bottom: 20px;">
+        <button onclick="window.print()">Print / Download PDF</button>
+    </div>
+    <div class="bill-box">
+        <div class="header">
+            <div><h1>{{ setting.site_name }}</h1><p>GSTIN: 09ABCDE1234F1Z5</p></div>
+            <div style="text-align: right;"><h2>INVOICE</h2><p>Date: {{ order.date_ordered.strftime('%d-%m-%Y') }}</p></div>
+        </div>
+        <div style="margin-top: 20px;">
+            <strong>Sold To:</strong><br>{{ current_user.username }}<br>{{ order.address }}
+        </div>
+        <table>
+            <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr><td>{{ item.product_name }}</td><td>{{ item.quantity }}</td><td>₹{{ item.price }}</td><td>₹{{ item.price * item.quantity }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total">Final Amount (Adv. Paid): ₹{{ order.total_amount }}</div>
+        <p style="font-size: 12px; color: #888; margin-top: 50px;">This is a computer-generated invoice. No signature required.</p>
+    </div>
+</body>
+</html>

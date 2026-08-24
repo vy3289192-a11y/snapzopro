@@ -1,0 +1,106 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<style>
+    .settings-wrapper { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .settings-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 25px; border-top: 4px solid #2874f0; }
+    
+    .card-header { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .full-width { grid-column: 1 / -1; }
+    
+    .form-label { font-size: 14px; font-weight: 600; color: #555; }
+    .form-input { padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; outline: none; transition: 0.3s; background: #fafafa; }
+    .form-input:focus { border-color: #2874f0; background: #fff; box-shadow: 0 0 0 2px rgba(40,116,240,0.1); }
+    
+    /* Beautiful Toggle Switch */
+    .toggle-box { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #eee; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #2ecc71; }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    .btn-save-big { background: #2874f0; color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(40,116,240,0.2); margin-top: 20px; }
+    .btn-save-big:hover { background: #1a5abf; transform: translateY(-2px); }
+</style>
+
+<div class="settings-wrapper">
+    <h2 style="color: #333; margin-bottom: 25px;">⚙️ Store Control Center</h2>
+
+    <form action="/admin/settings" method="POST">
+        
+        <div class="settings-card">
+            <div class="card-header">🏬 General Store Details</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Website Name</label>
+                    <input type="text" name="website_name" class="form-input" value="{{ setting.website_name | default('VISTAN') }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Store Tagline</label>
+                    <input type="text" name="tagline" class="form-input" placeholder="e.g., Your Premium Shopping Destination">
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Store Logo URL</label>
+                    <input type="text" name="logo_url" class="form-input" placeholder="http://.../logo.png">
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card" style="border-top-color: #2ecc71;">
+            <div class="card-header">💳 Payments & Checkout</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Admin UPI ID (For Payments)</label>
+                    <input type="text" name="upi_id" class="form-input" value="{{ setting.upi_id | default('vy3289192@okicici') }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Standard Delivery Charge (₹)</label>
+                    <input type="number" name="delivery_charge" class="form-input" placeholder="40" value="0">
+                </div>
+                
+                <div class="form-group full-width">
+                    <div class="toggle-box">
+                        <div>
+                            <strong style="color: #333; display: block; margin-bottom: 4px;">Enable Cash on Delivery (COD)</strong>
+                            <small style="color: #777;">Allow customers to pay when the product arrives.</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" name="enable_cod" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-card" style="border-top-color: #f39c12;">
+            <div class="card-header">📞 Contact & Social Media</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Support WhatsApp Number</label>
+                    <input type="text" name="whatsapp_num" class="form-input" placeholder="+91 00000 00000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Support Email Address</label>
+                    <input type="email" name="support_email" class="form-input" placeholder="help@vistan.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">YouTube Channel Link</label>
+                    <input type="text" name="youtube_link" class="form-input" placeholder="https://youtube.com/@yourchannel">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instagram Profile Link</label>
+                    <input type="text" name="insta_link" class="form-input" placeholder="https://instagram.com/yourprofile">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-save-big">SAVE ALL SETTINGS</button>
+    </form>
+</div>
+{% endblock %}

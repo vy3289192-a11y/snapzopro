@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body { background-color: #f1f3f6; font-family: Roboto, Arial, sans-serif; }
+    .orders-layout { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; gap: 20px; }
+    
+    /* Left Sidebar (Filters dummy for look) */
+    .filters-sidebar { width: 250px; background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); padding: 20px; height: fit-content; }
+    .filters-sidebar h3 { font-size: 16px; font-weight: 500; margin: 0 0 20px 0; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; }
+    .filter-section { margin-bottom: 25px; }
+    .filter-section h4 { font-size: 12px; color: #878787; text-transform: uppercase; margin-bottom: 15px; font-weight: 500; }
+    .filter-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 14px; color: #212121; }
+    
+    /* Right Orders Area */
+    .orders-main { flex: 1; }
+    
+    .order-card { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); margin-bottom: 15px; padding: 20px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: inherit; transition: 0.2s; border: 1px solid transparent; }
+    .order-card:hover { box-shadow: 0 3px 8px 0 rgba(0,0,0,.15); }
+    
+    .prod-box { display: flex; gap: 20px; align-items: flex-start; flex: 2; }
+    .prod-img { width: 75px; height: 75px; object-fit: contain; }
+    .prod-title { font-size: 14px; font-weight: 500; color: #212121; margin: 0 0 8px 0; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prod-meta { font-size: 12px; color: #878787; }
+    
+    .price-box { flex: 1; font-size: 15px; font-weight: 500; color: #212121; }
+    
+    .status-box { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .dot-green { background-color: #26a541; }
+    .dot-orange { background-color: #ff9f00; }
+    .dot-red { background-color: #ff6161; }
+    .status-text { font-size: 14px; font-weight: 500; color: #212121; display: flex; align-items: center; }
+    .status-sub { font-size: 12px; color: #878787; margin-left: 18px; }
+</style>
+
+<div class="orders-layout">
+    <div class="filters-sidebar">
+        <h3>Filters</h3>
+        <div class="filter-section">
+            <h4>ORDER STATUS</h4>
+            <div class="filter-item"><input type="checkbox"> On the way</div>
+            <div class="filter-item"><input type="checkbox"> Delivered</div>
+            <div class="filter-item"><input type="checkbox"> Cancelled</div>
+            <div class="filter-item"><input type="checkbox"> Returned</div>
+        </div>
+    </div>
+    
+    <div class="orders-main">
+        {% if orders %}
+            {% for order in orders %}
+            <a href="/order_details/{{ order.id }}" class="order-card">
+                
+                <div class="prod-box">
+                    {% if order.parsed_items %}
+                        <img src="{{ order.parsed_items[0].image_url }}" class="prod-img">
+                        <div>
+                            <h4 class="prod-title">{{ order.parsed_items[0].name }}</h4>
+                            <div class="prod-meta">Color: Multi &nbsp; Size: {{ order.parsed_items[0].size }}</div>
+                            {% if order.parsed_items|length > 1 %}
+                                <div class="prod-meta" style="color: #2874f0; margin-top: 5px; font-weight: 500;">+ {{ order.parsed_items|length - 1 }} more item(s)</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="price-box">₹{{ order.total_amount }}</div>
+                
+                <div class="status-box">
+                    <div class="status-text">
+                        {% if order.status == 'Delivered' %}
+                            <span class="status-dot dot-green"></span> Delivered
+                        {% elif order.status == 'Cancelled' %}
+                            <span class="status-dot dot-red"></span> Cancelled
+                        {% else %}
+                            <span class="status-dot dot-orange"></span> {{ order.status }}
+                        {% endif %}
+                    </div>
+                    <div class="status-sub">Your item status is updated here</div>
+                    <div style="color: #2874f0; font-size: 12px; font-weight: 500; margin-left: 18px; margin-top: 5px;">★ Rate & Review Product</div>
+                </div>
+                
+            </a>
+            {% endfor %}
+        {% else %}
+            <div style="background: #fff; padding: 50px; text-align: center; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2);">
+                <h2>No Orders Found</h2>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

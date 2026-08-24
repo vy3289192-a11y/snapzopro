@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISTAN | Premium Smart Shopping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; background: #f4f6f8; padding-top: 180px; color: #1c1c1c; }
+        
+        /* Pro Glassmorphism Header */
+        .header-main { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 12px 60px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            box-sizing: border-box; 
+            z-index: 1100; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04); 
+            transition: transform 0.4s cubic-bezier(0.3, 0, 0.2, 1); 
+        }
+        
+        .logo-img { height: 75px; width: auto; transition: transform 0.3s; }
+        .logo-img:hover { transform: scale(1.05); }
+
+        /* Modern Search Bar */
+        .search-container {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background: #f0f2f5;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .search-container input:focus {
+            background: #fff;
+            border-color: #2874f0;
+            box-shadow: 0 0 0 4px rgba(40, 116, 240, 0.1);
+        }
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 16px;
+        }
+
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 600; font-size: 15px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color 0.2s; }
+        .nav-links a i { font-size: 18px; }
+        .nav-links a:hover { color: #2874f0; }
+
+        /* Category Bar */
+        .category-bar { background: #fff; padding: 12px 60px; display: flex; justify-content: center; gap: 60px; border-bottom: 1px solid #eaeaea; position: fixed; top: 105px; width: 100%; box-sizing: border-box; z-index: 1050; transition: transform 0.4s cubic-bezier(0.3, 0, 0.2, 1); }
+        .category-bar a { text-decoration: none; color: #555; font-size: 15px; font-weight: 500; position: relative; padding-bottom: 5px; }
+        
+        .header-hidden { transform: translateY(-160px); }
+        
+        /* PREMIUM DROPDOWN MENU CSS */
+        .dropdown { position: relative; display: inline-block; padding: 10px 0; }
+        
+        .dropdown .main-link { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #1c1c1c;
+        }
+
+        /* Active link indicator */
+        .dropdown .main-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: #2874f0; transition: width 0.3s ease; }
+        .dropdown .main-link:hover::after, .dropdown .main-link.active::after { width: 100%; }
+        .dropdown .main-link:hover, .dropdown .main-link.active { color: #2874f0; }
+
+        /* Glassmorphism & Smooth Slide Animation */
+        .dropdown-content { 
+            visibility: hidden; 
+            opacity: 0; 
+            position: absolute; 
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(15px);
+            min-width: 220px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
+            z-index: 1100; 
+            border-radius: 12px; 
+            top: 130%; 
+            left: 50%;
+            transform: translateX(-50%); 
+            padding: 15px 0; 
+            border: 1px solid rgba(0,0,0,0.04); 
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        
+        .dropdown:hover .dropdown-content { 
+            visibility: visible; 
+            opacity: 1; 
+            top: 100%; 
+        }
+
+        /* Premium Links Design */
+        .dropdown-content a { 
+            color: #444; 
+            padding: 12px 25px; 
+            text-decoration: none; 
+            display: block; 
+            font-size: 14px; 
+            font-weight: 500; 
+            transition: all 0.3s ease; 
+            position: relative;
+        }
+        
+        .dropdown-content a::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 2px;
+            background: #2874f0;
+            transition: width 0.3s ease;
+        }
+
+        .dropdown-content a:hover { 
+            color: #2874f0; 
+            padding-left: 35px; 
+            background-color: transparent; 
+        }
+        
+        .dropdown-content a:hover::before { width: 12px; }
+        .dropdown-content a::after { display: none !important; }
+        
+        footer { background: #1a1a1a; color: #f0f0f0; padding: 40px 60px; text-align: center; margin-top: 60px; font-size: 14px; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <header class="header-main" id="mainHeader">
+        <a href="/"><img src="{{ url_for('static', filename='logo.png') }}" class="logo-img"></a>
+        
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search for products, brands and more...">
+        </div>
+
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="/profile"><i class="far fa-user-circle"></i> <span>Profile</span></a>
+                <a href="/my_orders"><i class="fas fa-box-open"></i> <span>Orders</span></a>
+                <a href="/cart" style="position: relative;">
+                    <i class="fas fa-shopping-cart"></i> <span>Cart</span>
+                    <span style="position: absolute; top: -5px; right: 0; background: #ff4757; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold;">
+                        {{ session.get('cart', []) | length }}
+                    </span>
+                </a>
+                {% if current_user.role == 'admin' %}
+                    <a href="/admin" style="color: #2874f0;"><i class="fas fa-shield-alt"></i> <span>Admin</span></a>
+                {% endif %}
+                <a href="/logout" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            {% else %}
+                <a href="/login" style="background: #2874f0; color:white; padding: 10px 25px; border-radius: 6px; flex-direction: row; gap: 8px;">
+                    <i class="fas fa-sign-in-alt" style="font-size: 14px;"></i> Login
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <nav class="category-bar" id="categoryBar">
+        
+        <div class="dropdown">
+            <a href="/" class="main-link {% if current_category == 'Home' %}active{% endif %}">Home</a>
+        </div>
+
+        <div class="dropdown">
+            <a href="/category/Men" class="main-link {% if current_category and 'Men' in current_category %}active{% endif %}">Men <i class="fas fa-caret-down" style="font-size: 12px;"></i></a>
+            <div class="dropdown-content">
+                <a href="/category/Men Topwear">Top Wear</a>
+                <a href="/category/Men Bottomwear">Bottom Wear</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <a href="/category/Women" class="main-link {% if current_category and 'Women' in current_category %}active{% endif %}">Women <i class="fas fa-caret-down" style="font-size: 12px;"></i></a>
+            <div class="dropdown-content">
+                <a href="/category/Women Topwear">Top Wear</a>
+                <a href="/category/Women Bottomwear">Bottom Wear</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 VISTAN Premium | Developed with ❤️ for Smart Shoppers</p>
+    </footer>
+
+    <script>
+        let lastScrollTop = 0;
+        const header = document.getElementById('mainHeader');
+        const categoryBar = document.getElementById('categoryBar');
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 150) {
+                header.classList.add('header-hidden');
+                categoryBar.classList.add('header-hidden');
+            } else {
+                header.classList.remove('header-hidden');
+                categoryBar.classList.remove('header-hidden');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+</body>
+</html>

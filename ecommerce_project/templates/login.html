@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+    
+    .login-container { 
+        max-width: 900px; 
+        margin: 60px auto; 
+        display: flex; 
+        background: #fff; 
+        border-radius: 12px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        min-height: 550px;
+        overflow: hidden;
+    }
+    
+    /* LEFT SIDE: Vistan Premium Dark Gradient */
+    .login-left { 
+        flex: 1; 
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        color: #fff; 
+        padding: 50px 40px; 
+        display: flex; 
+        flex-direction: column; 
+        position: relative;
+    }
+    
+    .brand-area h1 { margin: 0; font-size: 32px; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+    .brand-area p { color: #ffd700; margin: 5px 0 0 0; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+    
+    .welcome-text { margin-top: 60px; }
+    .welcome-text h2 { font-size: 30px; font-weight: 700; margin: 0 0 15px 0; color: #ffffff; }
+    .welcome-text p { font-size: 16px; line-height: 1.6; color: #b0c4de; margin: 0; }
+    
+    .feature-list { margin-top: auto; display: flex; flex-direction: column; gap: 15px; }
+    .feature-list p { margin: 0; font-size: 14px; color: #e2e8f0; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .feature-list i { color: #4ade80; font-size: 18px; }
+    
+    /* RIGHT SIDE: Clean Minimalist Form */
+    .login-right { 
+        flex: 1.2; 
+        padding: 60px 50px; 
+        background: #fff; 
+        display: flex; 
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .right-header { margin-bottom: 30px; }
+    .right-header h3 { font-size: 24px; color: #1e293b; margin: 0 0 5px 0; }
+    .right-header p { color: #64748b; font-size: 14px; margin: 0; }
+    
+    .form-group { margin-bottom: 30px; position: relative; }
+    .form-input { 
+        width: 100%; 
+        padding: 12px 0; 
+        font-size: 16px; 
+        border: none; 
+        border-bottom: 2px solid #e2e8f0; 
+        outline: none; 
+        transition: 0.3s;
+        box-sizing: border-box;
+        color: #1e293b;
+        font-weight: 500;
+    }
+    .form-input:focus { border-bottom: 2px solid #2874f0; }
+    
+    /* Floating Label CSS */
+    .form-input::placeholder { color: transparent; }
+    .floating-label { 
+        position: absolute; 
+        top: 12px; 
+        left: 0; 
+        font-size: 16px; 
+        color: #94a3b8; 
+        pointer-events: none; 
+        transition: 0.2s ease all; 
+    }
+    .form-input:focus ~ .floating-label,
+    .form-input:not(:placeholder-shown) ~ .floating-label {
+        top: -15px;
+        font-size: 13px;
+        color: #2874f0;
+        font-weight: 600;
+    }
+    
+    .terms-text { font-size: 12px; color: #64748b; margin-bottom: 25px; line-height: 1.6; }
+    .terms-text a { color: #2874f0; text-decoration: none; font-weight: 600; }
+    
+    .btn-login { 
+        width: 100%; 
+        background: #2874f0;
+        color: #fff; 
+        border: none; 
+        padding: 16px; 
+        font-size: 16px; 
+        font-weight: bold; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        transition: 0.3s;
+        box-shadow: 0 4px 12px rgba(40,116,240,0.2);
+    }
+    .btn-login:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(40,116,240,0.3); }
+    
+    .flash-messages { margin-bottom: 20px; }
+    .alert { padding: 12px; background: #fee2e2; color: #b91c1c; border-radius: 6px; font-size: 14px; border: 1px solid #fecaca; }
+</style>
+
+<div class="login-container">
+    <div class="login-left">
+        <div class="brand-area">
+            <h1><i class="fas fa-shopping-bag" style="color: #ffd700;"></i> VISTAN</h1>
+            <p>PREMIUM SMART SHOPPING</p>
+        </div>
+        
+        <div class="welcome-text">
+            <h2>Welcome Back!</h2>
+            <p>Log in to access your personalized shopping experience, exclusive premium offers, and track your orders in real-time.</p>
+        </div>
+        
+        <div class="feature-list">
+            <p><i class="fas fa-check-circle"></i> 100% Original Brands</p>
+            <p><i class="fas fa-check-circle"></i> Secure & Fast Checkout</p>
+            <p><i class="fas fa-check-circle"></i> Easy 7-Day Returns</p>
+        </div>
+    </div>
+    
+    <div class="login-right">
+        
+        <div class="right-header">
+            <h3>Login or Signup</h3>
+            <p>Enter your email to continue</p>
+        </div>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <input type="email" name="email" class="form-input" placeholder="Enter Email" required>
+                <label class="floating-label">Email Address</label>
+            </div>
+            
+            <p class="terms-text">By continuing, you agree to Vistan's <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.</p>
+            
+            <button type="submit" class="btn-login">Request Secure OTP <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* ================= PREMIUM PROFILE UI CSS ================= */
+    .profile-wrapper {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        display: flex;
+        gap: 30px;
+    }
+
+    /* Left Sidebar Navigation */
+    .profile-nav-card {
+        flex: 1;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        height: fit-content;
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+
+    .user-brief-box {
+        padding: 30px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 1px solid #eee;
+    }
+
+    .user-avatar {
+        width: 90px;
+        height: 90px;
+        background: #2874f0;
+        color: white;
+        font-size: 35px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        box-shadow: 0 5px 15px rgba(40, 116, 240, 0.2);
+        border: 4px solid #fff;
+    }
+
+    .nav-group {
+        padding: 15px 0;
+    }
+
+    .nav-link-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 14px 25px;
+        text-decoration: none;
+        color: #444;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+    }
+
+    .nav-link-item i {
+        font-size: 18px;
+        width: 25px;
+        color: #777;
+    }
+
+    .nav-link-item:hover {
+        background: #f0f5ff;
+        color: #2874f0;
+    }
+
+    .nav-link-item.active {
+        background: #f0f5ff;
+        color: #2874f0;
+        border-left-color: #2874f0;
+    }
+
+    .nav-link-item.logout-link:hover {
+        background: #fff5f5;
+        color: #ff4757;
+    }
+
+    /* Right Side Content Area */
+    .profile-content-area {
+        flex: 2.8;
+    }
+
+    .info-card {
+        background: #fff;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: 1px solid #eee;
+    }
+
+    .section-header {
+        font-size: 20px;
+        font-weight: 700;
+        color: #212121;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #757575;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 14px 18px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 15px;
+        outline: none;
+        background: #fafafa;
+        transition: border-color 0.3s;
+        box-sizing: border-box;
+    }
+
+    .input-group input:focus {
+        border-color: #2874f0;
+        background: #fff;
+    }
+
+    .input-group input:disabled {
+        background: #f1f3f6;
+        cursor: not-allowed;
+        color: #888;
+    }
+
+    .btn-update {
+        background: #2874f0;
+        color: #fff;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.3s;
+        box-shadow: 0 4px 12px rgba(40, 116, 240, 0.2);
+        margin-top: 20px;
+    }
+
+    .btn-update:hover {
+        background: #1a5abf;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Mobile */
+    @media (max-width: 850px) {
+        .profile-wrapper { flex-direction: column; }
+        .form-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="profile-wrapper">
+    <aside class="profile-nav-card">
+        <div class="user-brief-box">
+            <div class="user-avatar">
+                {{ current_user.username[0].upper() }}
+            </div>
+            <h3 style="margin: 0; font-size: 18px; color: #212121;">{{ current_user.username }}</h3>
+            <p style="margin: 5px 0 0; font-size: 13px; color: #757575;">Member since {{ current_user.date_joined.strftime('%Y') }}</p>
+        </div>
+
+        <nav class="nav-group">
+            <a href="/profile" class="nav-link-item active">
+                <i class="fas fa-user-cog"></i> Account Settings
+            </a>
+            <a href="/my_orders" class="nav-link-item">
+                <i class="fas fa-shopping-bag"></i> My Orders
+            </a>
+            <a href="/wishlist" class="nav-link-item">
+                <i class="fas fa-heart"></i> My Wishlist
+            </a>
+            <a href="/cart" class="nav-link-item">
+                <i class="fas fa-shopping-cart"></i> View Cart
+            </a>
+            <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 10px 0;">
+            <a href="/logout" class="nav-link-item logout-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <div class="profile-content-area">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}{% for category, message in messages %}
+                <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; text-align: center;">
+                    <i class="fas fa-check-circle"></i> {{ message }}
+                </div>
+            {% endfor %}{% endif %}
+        {% endwith %}
+
+        <div class="info-card">
+            <div class="section-header">
+                <i class="fas fa-id-card" style="color: #2874f0;"></i> Personal Information
+            </div>
+
+            <form method="POST">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" name="username" value="{{ current_user.username }}" placeholder="Enter your name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" value="{{ current_user.email }}" disabled title="Email cannot be changed">
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" value="{{ current_user.phone or '' }}" placeholder="Enter phone number">
+                    </div>
+                    <div class="input-group">
+                        <label>Account Role</label>
+                        <input type="text" value="{{ current_user.role.capitalize() }}" disabled>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <div class="section-header">
+                        <i class="fas fa-lock" style="color: #ff9f00;"></i> Security Settings
+                    </div>
+                    <p style="font-size: 14px; color: #757575; margin-bottom: 20px;">VISTAN uses secure OTP login. Your account is always protected.</p>
+                </div>
+
+                <button type="submit" class="btn-update">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

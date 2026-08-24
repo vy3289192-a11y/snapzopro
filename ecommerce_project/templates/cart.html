@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body { background-color: #f0f2f5; }
+    .cart-container { max-width: 1000px; margin: 40px auto; display: flex; gap: 25px; align-items: flex-start; padding: 0 20px; }
+    
+    .cart-left { flex: 2; }
+    .cart-right { flex: 1; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 120px; }
+    
+    .cart-header { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333; }
+    
+    .cart-item { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; gap: 20px; position: relative; }
+    .cart-img { width: 100px; height: 120px; object-fit: cover; border-radius: 6px; border: 1px solid #eee; }
+    
+    .item-details h4 { margin: 0 0 10px 0; font-size: 16px; color: #212121; }
+    .item-details p { margin: 5px 0; font-size: 14px; color: #666; }
+    .item-price { font-size: 18px; font-weight: bold; color: #212121; margin-top: 10px; }
+    
+    .btn-remove { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 18px; transition: 0.2s; }
+    .btn-remove:hover { color: #c0392b; transform: scale(1.1); }
+    
+    .price-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; color: #555; }
+    .price-total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ccc; font-size: 18px; font-weight: bold; color: #333; }
+    
+    .btn-checkout { display: block; text-align: center; width: 100%; background: #fb641b; color: #fff; padding: 15px; font-size: 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; margin-top: 20px; text-transform: uppercase; box-sizing: border-box; }
+    .btn-checkout:hover { background: #df5817; }
+    
+    .empty-cart { background: #fff; padding: 50px 20px; text-align: center; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+</style>
+
+<div class="cart-container">
+    <div class="cart-left">
+        <div class="cart-header">My Cart ({{ cart_items|length }} Items)</div>
+        
+        {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="cart-item">
+                <img src="{{ item.image_url }}" alt="Product" class="cart-img">
+                <div class="item-details">
+                    <h4>{{ item.name }}</h4>
+                    <p>Size: <span style="font-weight: 600; color:#333;">{{ item.size }}</span></p>
+                    <p>Quantity: <span style="font-weight: 600; color:#333;">{{ item.quantity }}</span></p>
+                    <div class="item-price">₹{{ item.selling_price }}</div>
+                </div>
+                <a href="/remove_item/{{ item.id }}/{{ item.size }}" class="btn-remove" title="Remove from Cart"><i class="fas fa-trash-alt"></i></a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-cart">
+                <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-2130356-1800917.png" alt="Empty Cart" style="width: 200px; margin-bottom: 20px;">
+                <h3 style="color: #333; margin-bottom: 10px;">Your cart is empty!</h3>
+                <p style="color: #666; margin-bottom: 25px;">Add items to it now.</p>
+                <a href="/" style="background: #2874f0; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">Shop Now</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if cart_items %}
+    <div class="cart-right">
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 20px; color: #878787; border-bottom: 1px solid #eee; padding-bottom: 15px;">PRICE DETAILS</div>
+        
+        <div class="price-row">
+            <span>Price ({{ cart_items|length }} items)</span>
+            <span>₹{{ total_amount }}</span>
+        </div>
+        
+        <div class="price-row" style="color: #388e3c;">
+            <span>Delivery Charges</span>
+            <span>FREE</span>
+        </div>
+        
+        <div class="price-total">
+            <span>Total Amount</span>
+            <span>₹{{ total_amount }}</span>
+        </div>
+        
+        <a href="/checkout" class="btn-checkout">PLACE ORDER</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

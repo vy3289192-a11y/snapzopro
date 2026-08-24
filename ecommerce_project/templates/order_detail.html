@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body { background-color: #f1f3f6; font-family: Roboto, Arial, sans-serif; }
+    .detail-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: flex; gap: 15px; align-items: flex-start; }
+    
+    /* Left Main Section */
+    .detail-left { flex: 2.2; background: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); border-radius: 2px; }
+    
+    .item-section { padding: 25px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; }
+    .item-info { display: flex; flex-direction: column; gap: 8px; }
+    .item-title { font-size: 16px; color: #212121; font-weight: 500; }
+    .item-meta { font-size: 12px; color: #878787; }
+    .item-seller { font-size: 12px; color: #878787; margin-top: 5px; }
+    .item-price { font-size: 20px; font-weight: 500; color: #212121; margin-top: 10px; }
+    .item-img { width: 100px; height: auto; object-fit: contain; }
+    
+    /* Order Tracker Line */
+    .tracker-section { padding: 40px 25px; border-bottom: 1px solid #f0f0f0; }
+    .track-row { display: flex; gap: 15px; margin-bottom: 25px; position: relative; }
+    .track-row::before { content: ''; position: absolute; left: 6px; top: 15px; width: 2px; height: 100%; background: #26a541; z-index: 1; }
+    .track-row:last-child::before { display: none; }
+    .track-dot { width: 14px; height: 14px; border-radius: 50%; background: #26a541; position: relative; z-index: 2; margin-top: 2px; }
+    .track-dot.red { background: #ff6161; }
+    .track-text { font-size: 14px; font-weight: 500; color: #212121; }
+    .track-date { font-size: 12px; color: #878787; margin-top: 4px; }
+    
+    .action-section { padding: 20px 25px; text-align: center; }
+    .btn-chat { font-size: 14px; font-weight: 500; color: #212121; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    
+    /* Right Side (Boxes) */
+    .detail-right { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+    
+    .info-box { background: #fff; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); border-radius: 2px; padding: 20px; }
+    .box-title { font-size: 16px; font-weight: 500; color: #878787; margin: 0 0 15px 0; }
+    
+    .address-details h4 { margin: 0 0 5px 0; font-size: 14px; color: #212121; }
+    .address-details p { margin: 0 0 15px 0; font-size: 13px; color: #212121; line-height: 1.5; }
+    .address-details strong { font-weight: 500; }
+    
+    .price-row { display: flex; justify-content: space-between; font-size: 14px; color: #212121; margin-bottom: 12px; }
+    .price-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 500; color: #212121; border-top: 1px dashed #e0e0e0; padding-top: 15px; margin-top: 5px; }
+</style>
+
+<div style="max-width: 1200px; margin: 20px auto 0; padding: 0 20px; font-size: 12px; color: #878787;">
+    <a href="/" style="color: #878787; text-decoration: none;">Home</a> > <a href="/my_orders" style="color: #878787; text-decoration: none;">My Account</a> > My Orders > #ORD-{{ order.id }}
+</div>
+
+<div class="detail-container">
+    
+    <div class="detail-left">
+        {% for item in order.parsed_items %}
+        <div class="item-section">
+            <div class="item-info">
+                <div class="item-title">{{ item.name }}</div>
+                <div class="item-meta">Size: {{ item.size }} &nbsp;|&nbsp; Qty: {{ item.quantity }}</div>
+                <div class="item-seller">Seller: VISTAN RETAIL</div>
+                <div class="item-price">₹{{ item.selling_price }}</div>
+            </div>
+            <img src="{{ item.image_url }}" class="item-img">
+        </div>
+        {% endfor %}
+        
+        <div class="tracker-section">
+            <div class="track-row">
+                <div class="track-dot"></div>
+                <div>
+                    <div class="track-text">Order Confirmed</div>
+                    <div class="track-date">{{ order.date_ordered.strftime('%b %d, %Y') if order.date_ordered else '' }}</div>
+                </div>
+            </div>
+            
+            <div class="track-row">
+                <div class="track-dot {% if order.status == 'Cancelled' %}red{% endif %}"></div>
+                <div>
+                    <div class="track-text">
+                        {% if order.status == 'Pending' %}Processing Order
+                        {% elif order.status == 'Cancelled' %}Cancelled
+                        {% else %}{{ order.status }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-section">
+            <a href="#" class="btn-chat"><i class="far fa-comment-dots" style="font-size: 18px;"></i> Chat with us</a>
+        </div>
+    </div>
+    
+    <div class="detail-right">
+        
+        <div class="info-box address-details">
+            <h3 class="box-title">Delivery details</h3>
+            <h4>{{ order.customer_name }}</h4>
+            <p>{{ order.delivery_address }}</p>
+            <p><strong>Phone Number:</strong> {{ order.customer_phone }}</p>
+        </div>
+        
+        <div class="info-box">
+            <h3 class="box-title">Price details</h3>
+            <div class="price-row">
+                <span>Total Amount</span>
+                <span>₹{{ order.total_amount }}</span>
+            </div>
+            <div class="price-row">
+                <span>Delivery Charges</span>
+                <span style="color: #388e3c;">FREE</span>
+            </div>
+            
+            <div class="price-total">
+                <span>Total</span>
+                <span>₹{{ order.total_amount }}</span>
+            </div>
+            
+            <div style="background: #f5f5f5; padding: 10px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 2px;">
+                <span style="font-size: 13px; color: #212121;">Paid By</span>
+                <strong style="font-size: 13px;">{{ order.payment_mode }}</strong>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
