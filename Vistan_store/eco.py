@@ -94,8 +94,7 @@ def send_otp():
         return jsonify({"status": "success", "message": "OTP आपके ईमेल पर भेज दिया गया है!"})
     except Exception as e:
         print("SMTP Blocked on Render, but OTP generated successfully:", str(e))
-        return jsonify({"status": "success", "message": "OTP जनरेट हो गया है! (Render फ्री टियर पर ईमेल ब्लॉक है, कृपया Render Logs से OTP देखें)"})जाएगा।
-
+        return jsonify({"status": "success", "message": "OTP जनरेट हो गया है! Render Logs से OTP देखें"})
 @app.route('/api/verify_otp', methods=['POST'])
 
 @app.route('/logout')
