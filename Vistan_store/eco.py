@@ -23,7 +23,6 @@ class User(db.Model):
     address = db.Column(db.String(300), default="")
     password = db.Column(db.String(100), nullable=False)
 
-# 🔥 एडवांस प्रोडक्ट डेटाबेस (4 Photos, Description, Category, Stock)
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -32,7 +31,7 @@ class Product(db.Model):
     description = db.Column(db.Text, default="Premium Quality Product")
     category = db.Column(db.String(50), default="General")
     stock = db.Column(db.Integer, default=10)
-    image = db.Column(db.String(300), nullable=False) # Main Image
+    image = db.Column(db.String(300), nullable=False)
     image2 = db.Column(db.String(300), default="")
     image3 = db.Column(db.String(300), default="")
     image4 = db.Column(db.String(300), default="")
@@ -51,7 +50,6 @@ class Order(db.Model):
 def inject_user():
     return dict(current_user_name=session.get('user_name'))
 
-# इमेज सेव करने का शॉर्टकट फंक्शन
 def save_image(file):
     if file and file.filename != '':
         filename = secure_filename(file.filename)
@@ -62,7 +60,7 @@ def save_image(file):
         return '/' + file_path.replace('\\', '/')
     return ""
 
-# ==================== असली OTP बेस्ड लॉगिन/रजिस्टर APIs ====================
+# ==================== ठीक किया गया OTP API (Port 465 SSL के साथ) ====================
 SENDER_EMAIL = "roliy6064@gmail.com" 
 SENDER_PASSWORD = "tjub srnv vhug nbiy" 
 
@@ -70,7 +68,8 @@ SENDER_PASSWORD = "tjub srnv vhug nbiy"
 def send_otp():
     data = request.json
     email_address = data.get('email')
-    if not email_address: return jsonify({"status": "error", "message": "कृपया ईमेल भरें!"})
+    if not email_address: 
+        return jsonify({"status": "error", "message": "कृपया ईमेल भरें!"})
     
     otp = str(random.randint(1000, 9999))
     session['current_otp'] = otp
@@ -91,21 +90,24 @@ def send_otp():
             </div></div></body></html>
         """
         msg.add_alternative(html_content, subtype='html')
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
+        
+        # 🔥 यहाँ बदलाव किया है: Port 465 और SMTP_SSL का इस्तेमाल (Render के लिए बेस्ट)
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
         server.send_message(msg)
         server.quit()
+        
         return jsonify({"status": "success", "message": "OTP आपके ईमेल पर भेज दिया गया है!"})
     except Exception as e:
-        return jsonify({"status": "error", "message": "ईमेल भेजने में समस्या हुई। कृपया ईमेल आईडी चेक करें!"})
+        print("SMTP Error:", str(e)) # Render लॉग्स में असली एरर देखने के लिए
+        return jsonify({"status": "error", "message": "ईमेल भेजने में समस्या हुई। कृपया पुनः प्रयास करें!"})
 
 @app.route('/api/verify_otp', methods=['POST'])
 def verify_otp():
     data = request.json
     email = data.get('email')
     user_otp = data.get('otp')
-    if session.get('current_otp') == user_otp and session.get('otp_email') == email:
+    if session.get('current_otp') == user_otp and session.get('otp_email'] == email:
         session.pop('current_otp', None)
         user = User.query.filter_by(email=email).first()
         if not user:
@@ -210,7 +212,6 @@ def add_product():
         return redirect(url_for('admin_dashboard'))
     return render_template('add.html')
 
-# 🔥 नया: प्रोडक्ट एडिट करने का रूट 🔥
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
     if not session.get('admin_logged_in'): return redirect(url_for('admin_login'))
