@@ -103,22 +103,6 @@ def send_otp():
         return jsonify({"status": "error", "message": "ईमेल भेजने में समस्या हुई। कृपया पुनः प्रयास करें!"})
 
 @app.route('/api/verify_otp', methods=['POST'])
-def verify_otp():
-    data = request.json
-    email = data.get('email')
-    user_otp = data.get('otp')
-    if session.get('current_otp') == user_otp and session.get('otp_email'] == email:
-        session.pop('current_otp', None)
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            name_part = email.split('@')[0].capitalize()
-            user = User(name=name_part, email=email, password="real_otp_user")
-            db.session.add(user)
-            db.session.commit()
-        session['user_id'] = user.id
-        session['user_name'] = user.name
-        return jsonify({"status": "success"})
-    else: return jsonify({"status": "error", "message": "गलत OTP!"})
 
 @app.route('/logout')
 def logout():
