@@ -75,32 +75,32 @@ def send_otp():
     session['current_otp'] = otp
     session['otp_email'] = email_address
     
+    # चूंकि Render फ्री टियर SMTP ब्लॉक करता है, हम OTP को कंसोल में प्रिंट कर रहे हैं ताकि साइट क्रैश न हो
+    print(f"================================")
+    print(f"🔑 YOUR LOGIN OTP FOR {email_address} IS: {otp}")
+    print(f"================================")
+    
     try:
+        # कोशिश करेंगे कि अगर लोकल चल रहा है तो ईमेल चला जाए, Render पर ब्लॉक होने पर एक्सेप्शन पकड़ लेगा
         msg = EmailMessage()
         msg['Subject'] = 'Vistan Store - Your Login OTP'
         msg['From'] = f"Vistan Store <{SENDER_EMAIL}>"
         msg['To'] = email_address
-        html_content = f"""
-        <!DOCTYPE html><html><body style="background-color: #f1f3f6; font-family: sans-serif; padding: 40px 0; margin: 0;">
-          <div style="max-width: 500px; margin: 0 auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            <div style="background-color: #282c3f; padding: 25px; text-align: center;"><h1 style="color: #ffffff; margin: 0; font-size: 28px;">VISTAN<span style="color: #ff3f6c;">.STORE</span></h1></div>
-            <div style="padding: 35px 30px;"><p style="font-size: 16px; color: #333; margin-bottom: 20px; font-weight: bold;">Hello,</p><p style="font-size: 15px; color: #555; margin-bottom: 30px;">Your OTP for Vistan Store account is:</p>
-              <div style="text-align: center; margin-bottom: 35px;"><span style="font-size: 38px; font-weight: 800; color: #282c3f; background-color: #f5f5f6; padding: 15px 35px; border-radius: 8px; letter-spacing: 8px;">{otp}</span></div>
-              <p style="font-size: 14px; color: #777; background: #fff0f4; padding: 15px; border-left: 4px solid #ff3f6c;"><strong>Security Alert:</strong> Please do not share this OTP with anyone.</p>
-            </div></div></body></html>
-        """
-        msg.add_alternative(html_content, subtype='html')
+        msg.set_content(f"Your Vistan Store OTP is: {otp}")
         
-        # 🔥 यहाँ बदलाव किया है: Port 465 और SMTP_SSL का इस्तेमाल (Render के लिए बेस्ट)
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=5) # 5 सेकंड का सख्त टाइमआउट ताकि साइट न अटके
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
         server.send_message(msg)
         server.quit()
         
         return jsonify({"status": "success", "message": "OTP आपके ईमेल पर भेज दिया गया है!"})
     except Exception as e:
-        print("SMTP Error:", str(e)) # Render लॉग्स में असली एरर देखने के लिए
-        return jsonify({"status": "error", "message": "ईमेल भेजने में समस्या हुई। कृपया पुनः प्रयास करें!"})
+        print("SMTP Blocked on Render, but OTP generated successfully:", str(e))
+        # यूज़र को एरर नहीं देंगे, ताकि वो Render Logs से OTP देख कर लॉगिन कर सके
+        return jsonify({"status": "success", "message": "OTP जनरेट हो गया है! (Render फ्री टियर पर ईमेल ब्लॉक है, कृपया Render Logs से OTP देखें)"})
+    ```
+
+इस कोड को अपडेट करने के बाद GitHub पर पुश करें। अब जब भी कोई OTP मांगेगा, साइट क्रैश नहीं होगी और असली OTP आपको सीधे Render के **Logs** में लिखा हुआ मिल जाएगा।
 
 @app.route('/api/verify_otp', methods=['POST'])
 
