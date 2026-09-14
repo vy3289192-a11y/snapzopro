@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Vistan Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #f1f3f6; color: #282c3f; display: flex; flex-direction: column; min-height: 100vh; }
+    
+    header { background: #fff; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; }
+    .logo img { height: 45px; }
+    .back-btn { font-size: 16px; color: #282c3f; text-decoration: none; font-weight: bold; }
+    
+    .profile-wrapper { max-width: 1100px; margin: 40px auto; display: flex; gap: 30px; width: 100%; padding: 0 20px; flex: 1; }
+    
+    /* Left Sidebar */
+    .sidebar { width: 25%; }
+    .user-card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+    .user-avatar { width: 50px; height: 50px; background: #f1f3f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #ff3f6c; }
+    .user-hello { font-size: 12px; color: #777; }
+    .user-name { font-size: 18px; font-weight: 700; color: #282c3f; }
+    
+    .menu-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; }
+    .menu-item { padding: 18px 25px; display: flex; align-items: center; gap: 15px; color: #555; font-weight: 600; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+    .menu-item:hover { background: #f9f9f9; color: #ff3f6c; }
+    .menu-item.active { color: #ff3f6c; background: #fff0f4; border-left: 4px solid #ff3f6c; }
+    .menu-item i { font-size: 20px; color: #ff3f6c; width: 25px; }
+    
+    /* Right Content Box */
+    .content-box { width: 75%; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 40px; }
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; color: #282c3f; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+    .input-group { display: flex; flex-direction: column; }
+    .input-group label { font-size: 13px; font-weight: 700; color: #777; margin-bottom: 8px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 14px; border: 1px solid #eaeaec; border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; background: #fafafa; }
+    .input-group input:focus, .input-group textarea:focus { border-color: #ff3f6c; background: #fff; }
+    
+    .gender-box { display: flex; gap: 20px; margin-top: 5px; }
+    .gender-label { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; color: #282c3f; font-weight: 500; }
+    
+    .save-btn { background: #ff3f6c; color: white; border: none; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+    .save-btn:hover { background: #e0355d; }
+    
+    @media (max-width: 768px) {
+      .profile-wrapper { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .content-box { width: 100%; padding: 25px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    
+    footer { background: #282c3f; color: white; padding: 30px; margin-top: auto; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo"><img src="/static/81160.png" alt="Vistan Store"></a>
+    <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Go to Store</a>
+  </header>
+
+  <div class="profile-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="user-card">
+        <div class="user-avatar"><i class="fa-regular fa-user"></i></div>
+        <div>
+          <div class="user-hello">Hello,</div>
+          <div class="user-name">{{ user.name }}</div>
+        </div>
+      </div>
+      
+      <div class="menu-card">
+        <a href="/profile" class="menu-item active"><i class="fa-solid fa-user-pen"></i> Personal Information</a>
+        <a href="/my_orders" class="menu-item"><i class="fa-solid fa-box-open"></i> My Orders</a>
+        <a href="/logout" class="menu-item" style="color: #ff3f6c;"><i class="fa-solid fa-power-off"></i> Logout</a>
+      </div>
+    </div>
+    
+    <!-- Profile Form -->
+    <div class="content-box">
+      <h2 class="section-title">Personal Information</h2>
+      
+      <form method="POST" action="/profile">
+        <div class="form-grid">
+          
+          <div class="input-group">
+            <label>First Name</label>
+            <input type="text" name="first_name" value="{{ user.name }}" required>
+          </div>
+          
+          <div class="input-group">
+            <label>Last Name</label>
+            <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="E.g. Yadav">
+          </div>
+          
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" value="{{ user.email }}" disabled style="background: #eee; cursor: not-allowed; color: #888;">
+          </div>
+          
+          <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="number" name="phone" value="{{ user.phone }}" placeholder="10-digit mobile number">
+          </div>
+          
+        </div>
+        
+        <div class="input-group" style="margin-top: 25px;">
+          <label>Your Gender</label>
+          <div class="gender-box">
+            <label class="gender-label">
+              <input type="radio" name="gender" value="Male" {% if user.gender == 'Male' %}checked{% endif %}> Male
+            </label>
+            <label class="gender-label">
+              <input type="radio" name="gender" value="Female" {% if user.gender == 'Female' %}checked{% endif %}> Female
+            </label>
+          </div>
+        </div>
+        
+        <div class="input-group" style="margin-top: 25px;">
+          <label>Delivery Address</label>
+          <textarea name="address" rows="3" placeholder="House no., Building, Street, City, Pincode">{{ user.address }}</textarea>
+        </div>
+        
+        <button type="submit" class="save-btn">Save Information</button>
+      </form>
+      
+    </div>
+  </div>
+
+  <footer>&copy; 2026 Vistan Store. All Rights Reserved.</footer>
+
+</body>
+</html>

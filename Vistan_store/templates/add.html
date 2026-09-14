@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product - Vistan Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f8; display: flex; justify-content: center; padding: 40px 20px; }
+        .form-container { background: #fff; padding: 30px 40px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); width: 100%; max-width: 700px; }
+        .form-container h2 { margin-bottom: 25px; color: #282c3f; border-bottom: 2px solid #ff3f6c; padding-bottom: 10px; display: inline-block; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 700; color: #535766; margin-bottom: 8px; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d4d5d9; border-radius: 6px; font-size: 14px; outline: none; transition: 0.3s; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .submit-btn { background: #ff3f6c; color: #fff; border: none; padding: 14px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+        .submit-btn:hover { background: #e02f5a; }
+        .file-input { padding: 8px !important; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2><i class="fa-solid fa-box-open"></i> Add New Product</h2>
+    <!-- multipart/form-data फाइल अपलोड के लिए जरूरी है -->
+    <form action="/admin/add" method="POST" enctype="multipart/form-data">
+        
+        <div class="input-group">
+            <label>Product Name</label>
+            <input type="text" name="name" placeholder="e.g. Premium Cotton T-Shirt" required>
+        </div>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>Main Category</label>
+                <select name="category" id="category" onchange="updateSubcategories()" required>
+                    <option value="">Select Category...</option>
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Electronics">Electronics</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Sub Category</label>
+                <select name="subcategory" id="subcategory" required>
+                    <option value="">First Select Category</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>Selling Price (₹)</label>
+                <input type="number" name="price" placeholder="e.g. 499" required>
+            </div>
+            <div class="input-group">
+                <label>Old Price (₹)</label>
+                <input type="number" name="old_price" placeholder="e.g. 999">
+            </div>
+        </div>
+
+        <!-- 4 Image Upload Inputs -->
+        <h4 style="margin: 15px 0 10px 0; color: #ff3f6c;">Upload Product Images (Max 4)</h4>
+        <div class="grid-2">
+            <div class="input-group">
+                <label>Main Image (Required)</label>
+                <input type="file" name="image1" class="file-input" accept="image/*" required>
+            </div>
+            <div class="input-group">
+                <label>Image 2 (Optional)</label>
+                <input type="file" name="image2" class="file-input" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label>Image 3 (Optional)</label>
+                <input type="file" name="image3" class="file-input" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label>Image 4 (Optional)</label>
+                <input type="file" name="image4" class="file-input" accept="image/*">
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn"><i class="fa-solid fa-upload"></i> Upload Product</button>
+    </form>
+</div>
+
+<script>
+    const subcats = {
+        "Men": ["T-Shirts", "Casual Shirts", "Jeans", "Jackets"],
+        "Women": ["Kurtas & Suits", "Tops", "Dresses", "Sarees"],
+        "Footwear": ["Sneakers", "Formal Shoes", "Heels", "Sandals"],
+        "Accessories": ["Watches", "Wallets", "Belts", "Jewellery"],
+        "Electronics": ["Smartwatches", "Earbuds", "Headphones"]
+    };
+
+    function updateSubcategories() {
+        const cat = document.getElementById("category").value;
+        const subcatSelect = document.getElementById("subcategory");
+        subcatSelect.innerHTML = '<option value="">Select Sub-Category...</option>';
+        if(cat && subcats[cat]) {
+            subcats[cat].forEach(sub => {
+                const option = document.createElement("option");
+                option.value = sub; option.text = sub;
+                subcatSelect.appendChild(option);
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

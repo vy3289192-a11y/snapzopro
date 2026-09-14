@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - Vistan Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #f1f3f6; color: #282c3f; display: flex; flex-direction: column; min-height: 100vh; }
+    
+    header { background: #fff; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; }
+    .logo img { height: 45px; }
+    .back-btn { font-size: 16px; color: #282c3f; text-decoration: none; font-weight: bold; }
+    
+    .profile-wrapper { max-width: 1100px; margin: 40px auto; display: flex; gap: 30px; width: 100%; padding: 0 20px; flex: 1; }
+    
+    /* Left Sidebar */
+    .sidebar { width: 25%; }
+    .user-card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+    .user-avatar { width: 50px; height: 50px; background: #f1f3f6; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #ff3f6c; }
+    .user-hello { font-size: 12px; color: #777; }
+    .user-name { font-size: 18px; font-weight: 700; color: #282c3f; }
+    
+    .menu-card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; }
+    .menu-item { padding: 18px 25px; display: flex; align-items: center; gap: 15px; color: #555; font-weight: 600; text-decoration: none; border-bottom: 1px solid #f0f0f0; transition: 0.2s; }
+    .menu-item:hover { background: #f9f9f9; color: #ff3f6c; }
+    .menu-item.active { color: #ff3f6c; background: #fff0f4; border-left: 4px solid #ff3f6c; }
+    .menu-item i { font-size: 20px; color: #ff3f6c; width: 25px; }
+    
+    /* Right Orders Content */
+    .content-box { width: 75%; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 40px; }
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; color: #282c3f; }
+    
+    .order-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; background: #fafafa; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .order-info h4 { font-size: 16px; color: #282c3f; margin-bottom: 5px; }
+    .order-info p { font-size: 13px; color: #666; margin-bottom: 4px; }
+    .order-price { font-size: 18px; font-weight: 800; color: #282c3f; margin-top: 8px; }
+    
+    .order-status { text-align: right; }
+    .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 8px; }
+    .status-Pending { background: #fff8e1; color: #ff9f00; border: 1px solid #ffe082; }
+    .status-Dispatched { background: #e3f2fd; color: #007bff; border: 1px solid #90caf9; }
+    .status-Delivered { background: #e6f6f2; color: #03a685; border: 1px solid #a3e4d7; }
+    .status-Cancelled { background: #ffebee; color: #ff3f6c; border: 1px solid #f5b7b1; }
+    
+    .no-orders { text-align: center; padding: 50px 20px; color: #888; }
+    .no-orders i { font-size: 50px; color: #ccc; margin-bottom: 15px; }
+
+    @media (max-width: 768px) {
+      .profile-wrapper { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .content-box { width: 100%; padding: 25px; }
+      .order-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .order-status { text-align: left; }
+    }
+    
+    footer { background: #282c3f; color: white; padding: 30px; margin-top: auto; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo"><img src="/static/81160.png" alt="Vistan Store"></a>
+    <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Go to Store</a>
+  </header>
+
+  <div class="profile-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="user-card">
+        <div class="user-avatar"><i class="fa-regular fa-user"></i></div>
+        <div>
+          <div class="user-hello">Hello,</div>
+          <div class="user-name">{{ user.name }}</div>
+        </div>
+      </div>
+      
+      <div class="menu-card">
+        <a href="/profile" class="menu-item"><i class="fa-solid fa-user-pen"></i> Personal Information</a>
+        <a href="/my_orders" class="menu-item active"><i class="fa-solid fa-box-open"></i> My Orders</a>
+        <a href="/logout" class="menu-item" style="color: #ff3f6c;"><i class="fa-solid fa-power-off"></i> Logout</a>
+      </div>
+    </div>
+    
+    <!-- Orders Right Content -->
+    <div class="content-box">
+      <h2 class="section-title">My Orders ({{ orders|length }})</h2>
+      
+      {% for o in orders %}
+      <div class="order-card">
+        <div class="order-info">
+          <h4>Order ID: #VSTN{{ o.id }}</h4>
+          <p><strong>Product:</strong> {{ o.cart_details }}</p>
+          <p><strong>Delivery Address:</strong> {{ o.address }}</p>
+          <p><small style="color: #888;"><i class="fa-regular fa-clock"></i> {{ o.date.strftime('%d %b %Y, %I:%M %p') }}</small></p>
+          <div class="order-price">₹{{ o.total_amount }}</div>
+        </div>
+        <div class="order-status">
+          <span class="badge status-{{ o.status }}">{{ o.status }}</span>
+          <br>
+          <small style="color: #777;">(WhatsApp Verified)</small>
+        </div>
+      </div>
+      {% else %}
+      <div class="no-orders">
+        <i class="fa-solid fa-bag-shopping">​</i>
+        <h3 style="color: #555; margin-bottom: 5px;">No orders found!</h3>
+        <p>You haven't placed any orders yet. Start shopping now.</p>
+      </div>
+      {% endfor %}
+      
+    </div>
+  </div>
+
+  <footer>&copy; 2026 Vistan Store. All Rights Reserved.</footer>
+
+</body>
+</html>

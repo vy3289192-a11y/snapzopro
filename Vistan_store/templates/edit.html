@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product - Vistan Admin</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 40px 20px; margin:0;}
+        .form-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 700px; }
+        h2 { color: #ff9f00; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-top:0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; margin-top: 15px; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; }
+        input[type="file"] { padding: 10px; background: #f9f9f9; border: 1px dashed #aaa; }
+        .btn { width: 100%; padding: 15px; background: #ff9f00; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; }
+        .btn-cancel { background: #282c3f; margin-top: 10px; display: block; text-align: center; text-decoration: none; color: white;}
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>✏️ Edit Product: {{ p.name }}</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <label>Product Name</label>
+            <input type="text" name="name" value="{{ p.name }}" required>
+            
+            <div class="grid-2">
+                <div><label>Selling Price (₹)</label><input type="number" name="price" value="{{ p.price }}" required></div>
+                <div><label>MRP Price (₹)</label><input type="number" name="old_price" value="{{ p.old_price }}" required></div>
+                <div><label>Category</label><input type="text" name="category" value="{{ p.category }}" required></div>
+                <div><label>Stock</label><input type="number" name="stock" value="{{ p.stock }}" required></div>
+            </div>
+
+            <label>Product Description</label>
+            <textarea name="description" rows="4">{{ p.description }}</textarea>
+
+            <h3 style="margin-top:25px; color:#ff3f6c; border-bottom:1px solid #eee; padding-bottom:5px;">📸 Update Images (Leave blank to keep old)</h3>
+            <div class="grid-2">
+                <div><label>Change Image 1</label><img src="{{p.image}}" height="40"><input type="file" name="image1" accept="image/*"></div>
+                <div><label>Change Image 2</label>{% if p.image2 %}<img src="{{p.image2}}" height="40">{% endif %}<input type="file" name="image2" accept="image/*"></div>
+                <div><label>Change Image 3</label>{% if p.image3 %}<img src="{{p.image3}}" height="40">{% endif %}<input type="file" name="image3" accept="image/*"></div>
+                <div><label>Change Image 4</label>{% if p.image4 %}<img src="{{p.image4}}" height="40">{% endif %}<input type="file" name="image4" accept="image/*"></div>
+            </div>
+
+            <button type="submit" class="btn">Update Product</button>
+            <a href="/admin" class="btn btn-cancel">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

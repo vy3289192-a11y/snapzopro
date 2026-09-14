@@ -1,0 +1,131 @@
+<!-- 🔥 Flipkart Style OTP Modal (Real OTP System) 🔥 -->
+<style>
+  .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(2px); }
+  .auth-box-fk { display: flex; width: 700px; height: 480px; background: #fff; border-radius: 4px; position: relative; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .auth-close { position: absolute; top: 10px; right: 20px; font-size: 30px; background: transparent; border: none; cursor: pointer; color: #878787; z-index: 10; }
+  
+  .auth-left { width: 40%; background: #2874f0; padding: 45px 35px; color: #fff; display: flex; flex-direction: column; position: relative; }
+  .auth-left h2 { font-size: 28px; font-weight: 600; margin-bottom: 15px; }
+  .auth-left p { font-size: 16px; line-height: 1.5; color: #dbe6ff; }
+  .auth-logo { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 160px; border-radius: 8px; background: white; padding: 10px; }
+  
+  .auth-right { width: 60%; padding: 50px 35px; position: relative; display: flex; flex-direction: column; }
+  .fk-input { width: 100%; border: none; border-bottom: 1px solid #e0e0e0; padding: 10px 0; margin-bottom: 25px; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .fk-input:focus { border-bottom: 1px solid #2874f0; }
+  .fk-btn { background: #fb641b; color: #fff; border: none; padding: 14px; font-size: 15px; font-weight: bold; width: 100%; border-radius: 2px; cursor: pointer; margin-top: 10px; }
+  .fk-btn:hover { background: #e05412; }
+  .auth-link { color: #2874f0; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 20px; text-align: center; }
+
+  /* नया: इनलाइन मैसेज दिखाने के लिए सुंदर डिज़ाइन */
+  .auth-msg { font-size: 13px; font-weight: bold; text-align: center; margin-bottom: 15px; padding: 10px; border-radius: 4px; display: none; }
+
+  @media (max-width: 768px) {
+    .auth-box-fk { width: 90%; height: auto; flex-direction: column; }
+    .auth-left { width: 100%; padding: 30px 20px; }
+    .auth-logo { display: none; }
+    .auth-right { width: 100%; padding: 30px 20px; }
+  }
+</style>
+
+<div class="auth-overlay" id="authModal">
+  <div class="auth-box-fk">
+    <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+    <div class="auth-left">
+      <h2>Login / Sign up</h2>
+      <p>Get access to your Orders, Wishlist and Recommendations</p>
+      <img src="/static/81160.png" alt="Vistan Store Logo" class="auth-logo">
+    </div>
+    <div class="auth-right">
+      
+      <!-- नया: एरर या सक्सेस मैसेज यहीं दिखेगा (ब्राउज़र अलर्ट में नहीं) -->
+      <div id="authAlert" class="auth-msg"></div>
+      
+      <!-- Step 1: Email Input -->
+      <div id="emailStep">
+        <input type="email" id="authEmail" class="fk-input" placeholder="Enter Email Address">
+        <p style="font-size:12px; color:#878787; margin-bottom:15px;">By continuing, you agree to Vistan's Terms of Use and Privacy Policy.</p>
+        <button class="fk-btn" onclick="requestOTP()">Request OTP</button>
+      </div>
+
+      <!-- Step 2: OTP Input -->
+      <div id="otpStep" style="display:none;">
+        <p style="font-size:14px; margin-bottom:20px; color:#2874f0;">
+          Please enter the 4-digit OTP sent to your email <br><strong id="displayEmail"></strong>
+        </p>
+        <input type="number" id="authOTP" class="fk-input" placeholder="Enter OTP">
+        <button class="fk-btn" onclick="verifyOTP()">Verify & Login</button>
+        <div class="auth-link" onclick="resetAuth()">Change Email Address</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function openAuthModal() { 
+    document.getElementById('authModal').style.display = 'flex'; 
+    resetAuth();
+  }
+  function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+  
+  function resetAuth() {
+    document.getElementById('emailStep').style.display = 'block';
+    document.getElementById('otpStep').style.display = 'none';
+    document.getElementById('authOTP').value = '';
+    document.getElementById('authAlert').style.display = 'none'; // पुराने मैसेज हटा दें
+  }
+
+  // नया फंक्शन: जो बोरिंग अलर्ट की जगह फॉर्म के अंदर ही सुंदर मैसेज दिखाएगा
+  function showAuthMessage(msg, isError) {
+    const alertBox = document.getElementById('authAlert');
+    alertBox.innerText = msg;
+    alertBox.style.background = isError ? '#ffebee' : '#e6f6f2'; // लाल या हरा बैकग्राउंड
+    alertBox.style.color = isError ? '#ff3f6c' : '#03a685';      // लाल या हरा टेक्स्ट
+    alertBox.style.display = 'block';
+    setTimeout(() => { alertBox.style.display = 'none'; }, 4000);
+  }
+
+  async function requestOTP() {
+    const email = document.getElementById('authEmail').value;
+    if(!email) return showAuthMessage("Please enter email address!", true);
+
+    try {
+      const res = await fetch('/api/send_otp', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      
+      if(data.status === 'success') {
+          // सक्सेस होने पर कोई अलर्ट नहीं, सीधा स्क्रीन बदल जाएगी
+          document.getElementById('emailStep').style.display = 'none';
+          document.getElementById('otpStep').style.display = 'block';
+          document.getElementById('displayEmail').innerText = email;
+      } else {
+          showAuthMessage(data.message, true); // अगर कोई एरर है, तो लाल रंग में दिखाएं
+      }
+    } catch(e) { console.log(e); }
+  }
+
+  async function verifyOTP() {
+    const email = document.getElementById('authEmail').value;
+    const otp = document.getElementById('authOTP').value;
+    if(!otp) return showAuthMessage("Please enter OTP!", true);
+
+    try {
+      const res = await fetch('/api/verify_otp', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ email, otp })
+      });
+      const data = await res.json();
+      
+      if(data.status === 'success') {
+          window.location.reload(); 
+      } else {
+          showAuthMessage(data.message, true); // गलत OTP डालने पर लाल मैसेज
+      }
+    } catch(e) { console.log(e); }
+  }
+</script>

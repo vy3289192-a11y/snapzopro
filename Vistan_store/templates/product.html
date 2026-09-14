@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ product.name }} - Vistan Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* मूल स्टाइलिंग जो आपने दी थी */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #f1f3f6; color: #282c3f; display: flex; flex-direction: column; min-height: 100vh; }
+    
+    header { background: #fff; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; }
+    .back-btn { font-size: 18px; color: #282c3f; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 700; transition: color 0.2s; }
+    .back-btn:hover { color: #ff3f6c; }
+    
+    .nav-actions { display: flex; align-items: center; gap: 20px; }
+    .login-btn { background: #ff3f6c; color: white; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; }
+    .user-welcome { font-weight: bold; color: #282c3f; font-size: 14px; }
+
+    .product-container { max-width: 1200px; margin: 40px auto; background: #fff; border-radius: 12px; display: flex; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex: 1; width: 100%; }
+    
+    /* इमेज सेक्शन अपडेटेड: flex-direction column ताकि थंबनेल नीचे दिखें */
+    .img-section { width: 45%; padding: 40px; background: #fff; text-align: center; border-right: 1px solid #f0f0f0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .img-section img#mainImage { width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); object-fit: cover; transition: 0.3s; }
+    
+    /* नए थंबनेल की डिज़ाइन */
+    .thumbnails { display: flex; gap: 12px; margin-top: 20px; justify-content: center; }
+    .thumbnails img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .thumbnails img:hover { border-color: #ff3f6c; transform: scale(1.05); }
+
+    .details-section { width: 55%; padding: 50px 40px; display: flex; flex-direction: column; }
+    .p-name { font-size: 26px; font-weight: 700; margin-bottom: 12px; color: #212121; line-height: 1.3; }
+    .p-rating { background: #388e3c; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; width: max-content; margin-bottom: 25px; display: flex; align-items: center; gap: 4px; }
+    
+    .p-price-box { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+    .p-price { font-size: 34px; font-weight: 800; color: #212121; }
+    .p-old { font-size: 18px; text-decoration: line-through; color: #878787; }
+    .p-off { font-size: 16px; font-weight: 700; color: #388e3c; }
+
+    /* प्रोडक्ट डिटेल्स की डिज़ाइन */
+    .product-desc { font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.6; }
+
+    /* 3 ट्रस्ट बैनर की डिज़ाइन */
+    .trust-banners { display: flex; justify-content: space-between; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 20px 0; margin-bottom: 30px; }
+    .trust-item { text-align: center; flex: 1; }
+    .trust-item i { font-size: 24px; color: #ff3f6c; margin-bottom: 8px; }
+    .trust-item span { display: block; font-size: 13px; font-weight: 600; color: #282c3f; }
+    
+    .btn-group { display: flex; gap: 15px; margin-top: auto; }
+    .btn { flex: 1; padding: 18px; font-size: 16px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .add-cart-btn { background: #ff9f00; color: white; }
+    .add-cart-btn:hover { background: #f39800; }
+    .buy-now-btn { background: #fb641b; color: white; }
+    .buy-now-btn:hover { background: #f05d15; }
+
+    /* रिलेटेड प्रोडक्ट्स की डिज़ाइन */
+    .related-section { max-width: 1200px; margin: 0 auto 50px auto; padding: 0 20px; width: 100%; }
+    .related-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; border-left: 4px solid #ff3f6c; padding-left: 10px; color: #212121; }
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .related-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s; text-decoration: none; color: inherit; display: block; border: 1px solid #eee; }
+    .related-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .related-card img { width: 100%; height: 220px; object-fit: cover; }
+    .related-info { padding: 15px; }
+    .related-name { font-size: 15px; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #282c3f; }
+    .related-price-box { display: flex; align-items: baseline; gap: 8px; }
+    .related-price { font-weight: 700; color: #212121; font-size: 16px; }
+    .related-old { font-size: 13px; text-decoration: line-through; color: #878787; }
+
+    .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 14px 28px; border-radius: 30px; font-size: 15px; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: bottom 0.4s ease-in-out; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+    .toast.show { bottom: 40px; }
+    .toast i { color: #03a685; font-size: 18px; }
+
+    /* मोडल डिज़ाइन */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px); }
+    .checkout-box { background: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 550px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .checkout-box h3 { margin-bottom: 20px; font-size: 20px; color: #282c3f; border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; font-weight: 700; }
+    .close-modal { position: absolute; top: 22px; right: 25px; font-size: 24px; cursor: pointer; color: #878787; transition: 0.2s; }
+    .close-modal:hover { color: #ff3f6c; }
+    
+    .input-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+    .input-group label { font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 11px; border: 1px solid #d4d5d9; border-radius: 4px; font-size: 14px; outline: none; background: #fff; transition: 0.3s; }
+    .input-group input:focus, .input-group textarea:focus { border-color: #ff3f6c; box-shadow: 0 0 0 2px rgba(255,63,108,0.1); }
+    
+    .form-alert { background: #ffebee; color: #ff3f6c; padding: 10px; border-radius: 4px; font-size: 13px; font-weight: bold; margin-bottom: 15px; display: none; text-align: center; border-left: 4px solid #ff3f6c; }
+
+    .confirm-btn { width: 100%; background: #25d366; color: white; font-size: 15px; font-weight: 700; border: none; padding: 14px; border-radius: 4px; cursor: pointer; margin-top: 15px; transition: 0.2s; box-shadow: 0 2px 5px rgba(37,211,102,0.3); }
+    .confirm-btn:hover { background: #1ebd5a; }
+
+    @media (max-width: 768px) {
+      .product-container { flex-direction: column; margin: 0; border-radius: 0; }
+      .img-section, .details-section { width: 100%; border-right: none; }
+      .form-grid { grid-template-columns: 1fr !important; }
+    }
+
+    footer { background: #282c3f; color: white; padding: 30px; margin-top: auto; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
+    <div class="nav-actions">
+      {% if current_user_name %}
+        <a href="/profile" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+          <div class="user-welcome" style="cursor: pointer; padding: 8px 15px; border-radius: 4px; background: #f0f2f5; transition: 0.3s;">
+            <i class="fa-solid fa-circle-user" style="color: #ff3f6c; font-size: 16px;"></i> My Profile
+          </div>
+        </a>
+      {% else %}
+        <button class="login-btn" onclick="openAuthModal()">Login</button>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="product-container">
+    <!-- इमेज और थंबनेल सेक्शन -->
+    <div class="img-section">
+      <img id="mainImage" src="{{ product.image }}" alt="{{ product.name }}">
+      <div class="thumbnails">
+        <img src="{{ product.image }}" onclick="changeImage(this.src)" alt="thumb1">
+        <!-- अगर डेटाबेस में image2, image3 नाम अलग है, तो इसे बदल लें -->
+        <img src="{{ product.image2 or 'https://via.placeholder.com/150' }}" onclick="changeImage(this.src)" alt="thumb2">
+        <img src="{{ product.image3 or 'https://via.placeholder.com/150' }}" onclick="changeImage(this.src)" alt="thumb3">
+      </div>
+    </div>
+
+    <!-- डिटेल्स सेक्शन -->
+    <div class="details-section">
+      <h1 class="p-name">{{ product.name }}</h1>
+      <div class="p-rating">4.5 <i class="fa-solid fa-star" style="font-size:11px;"></i> <span style="font-weight:normal; opacity:0.9; margin-left:5px;">(2,103)</span></div>
+      
+      <div class="p-price-box">
+        <div class="p-price">₹{{ product.price }}</div>
+        <div class="p-old">₹{{ product.old_price }}</div>
+        <div class="p-off" id="discountPercent"></div>
+      </div>
+
+      <!-- प्रोडक्ट डिस्क्रिप्शन -->
+      <div class="product-desc">
+        {{ product.description or "Premium quality product designed for your comfort and style. Buy now at the best price!" }}
+      </div>
+
+      <!-- 3 ट्रस्ट बैनर -->
+      <div class="trust-banners">
+        <div class="trust-item">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>7 Days Return</span>
+        </div>
+        <div class="trust-item">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <span>Cash on Delivery</span>
+        </div>
+        <div class="trust-item">
+            <i class="fa-solid fa-headset"></i>
+            <span>24/7 Support</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn add-cart-btn" onclick="addToCart()"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+        <button class="btn buy-now-btn" onclick="openCheckout()"><i class="fa-solid fa-bolt"></i> Buy Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- रिलेटेड प्रोडक्ट्स सेक्शन -->
+  <div class="related-section">
+    <h2 class="related-title">You Might Also Like</h2>
+    <div class="related-grid">
+      {% for related in related_products %}
+      <a href="/product/{{ related.id }}" class="related-card">
+        <img src="{{ related.image }}" alt="{{ related.name }}">
+        <div class="related-info">
+          <div class="related-name">{{ related.name }}</div>
+          <div class="related-price-box">
+            <span class="related-price">₹{{ related.price }}</span>
+            <span class="related-old">₹{{ related.old_price }}</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa-solid fa-circle-check"></i> <span>Product added to cart!</span></div>
+
+  <!-- चेकआउट मोडल -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="checkout-box">
+      <i class="fa-solid fa-xmark close-modal" onclick="closeCheckout()"></i>
+      <h3>Delivery Details</h3>
+      
+      <div id="checkoutAlert" class="form-alert"></div>
+
+      <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="input-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+          <label>Customer Name</label>
+          <input type="text" id="custName" value="{% if current_user_name %}{{ current_user_name }}{% endif %}" placeholder="Enter your full name">
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label>Mobile Number</label>
+          <input type="number" id="custPhone" placeholder="10-digit mobile number">
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label>Email Address</label>
+          <input type="email" id="custEmail" placeholder="you@email.com">
+        </div>
+        <div class="input-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+          <label>Full Address</label>
+          <textarea id="custAddress" rows="2" placeholder="House no, Building, Street, Area"></textarea>
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label>Pincode</label>
+          <input type="number" id="custPincode" placeholder="e.g. 221001">
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label>City</label>
+          <input type="text" id="custCity" placeholder="City">
+        </div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label>State</label>
+          <input type="text" id="custState" placeholder="State">
+        </div>
+      </div>
+
+      <button class="confirm-btn" onclick="placeOrder()"><i class="fa-brands fa-whatsapp"></i> Place Order via WhatsApp</button>
+    </div>
+  </div>
+
+  {% include 'login_modal.html' %}
+
+  <footer>&copy; 2026 Vistan Store. All Rights Reserved.</footer>
+
+  <script>
+    const isLoggedIn = {% if current_user_name %}true{% else %}false{% endif %};
+    const price = {{ product.price }};
+    const oldPrice = {{ product.old_price }};
+    document.getElementById('discountPercent').innerText = Math.round(((oldPrice - price) / oldPrice) * 100) + "% OFF";
+    const sellerWhatsApp = "6388322731"; 
+
+    // थंबनेल इमेज चेंज करने का फंक्शन
+    function changeImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+
+    function addToCart() {
+      let cart = JSON.parse(localStorage.getItem('vistanCart')) || [];
+      const item = { id: {{ product.id }}, name: "{{ product.name }}", price: price, image: "{{ product.image }}", qty: 1 };
+      const existing = cart.find(i => i.id === item.id);
+      if(existing) { existing.qty += 1; } else { cart.push(item); }
+      localStorage.setItem('vistanCart', JSON.stringify(cart));
+      
+      const toast = document.getElementById("toast");
+      toast.classList.add("show");
+      setTimeout(() => { toast.classList.remove("show"); }, 3000);
+    }
+
+    function openCheckout() {
+      if (!isLoggedIn) {
+        openAuthModal();
+        return;
+      }
+      document.getElementById('checkoutAlert').style.display = 'none'; 
+      document.getElementById('checkoutModal').style.display = 'flex';
+    }
+    
+    function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; }
+
+    function showCheckoutError(msg) {
+      const alertBox = document.getElementById('checkoutAlert');
+      alertBox.innerText = msg;
+      alertBox.style.display = 'block';
+    }
+
+    async function placeOrder() {
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const email = document.getElementById('custEmail').value;
+      const address = document.getElementById('custAddress').value;
+      const pincode = document.getElementById('custPincode').value;
+      const city = document.getElementById('custCity').value;
+      const state = document.getElementById('custState').value;
+
+      if(!name) return showCheckoutError("Please enter customer name!");
+      if(!phone || phone.length < 10) return showCheckoutError("Please enter a valid 10-digit mobile number!");
+      if(!email || !email.includes('@')) return showCheckoutError("Please enter a valid email address!");
+      if(!address) return showCheckoutError("Please enter your full address!");
+      if(!pincode) return showCheckoutError("Please enter pincode!");
+      if(!city) return showCheckoutError("Please enter city name!");
+      if(!state) return showCheckoutError("Please enter state name!");
+      
+      const cartDetails = "{{ product.name }} (x1)";
+      const fullDbAddress = `${address}, ${city}, ${state} - ${pincode} (Email: ${email})`;
+
+      try {
+        await fetch('/api/place_order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, phone, address: fullDbAddress, cart_details: cartDetails, total: price })
+        });
+      } catch(e) { console.log(e); }
+
+      let msg = `🚨 *NEW ORDER* 🚨%0a%0a`;
+      msg += `*🛍️ Product:* {{ product.name }}%0a`;
+      msg += `*💰 Price:* ₹${price}%0a%0a`;
+      
+      msg += `*👤 CUSTOMER DETAILS:*%0a`;
+      msg += `Name: ${name}%0a`;
+      msg += `Mobile: ${phone}%0a`;
+      msg += `Email: ${email}%0a%0a`;
+      
+      msg += `*🚚 DELIVERY ADDRESS:*%0a`;
+      msg += `${address}%0a`;
+      msg += `City: ${city}%0a`;
+      msg += `State: ${state}%0a`;
+      msg += `Pincode: ${pincode}`;
+
+      window.open(`https://wa.me/${sellerWhatsApp}?text=${msg}`, "_blank");
+      closeCheckout();
+    }
+  </script>
+</body>
+</html>

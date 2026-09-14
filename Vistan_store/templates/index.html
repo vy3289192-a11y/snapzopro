@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vistan Store - Premium Online Shopping</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    :root { --primary: #ff3f6c; --dark: #282c3f; --light-gray: #f5f5f6; --success: #03a685; }
+    body { background-color: #f1f3f6; color: var(--dark); display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+    
+    /* 🚀 Top Marquee Bar */
+    .top-bar { background: var(--dark); color: #fff; font-size: 13px; font-weight: 600; padding: 8px 0; letter-spacing: 1px; }
+    .top-bar b { color: #ffc200; }
+
+    /* 💎 Premium Header CSS */
+    .premium-header { background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 1000; width: 100%; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f5f5f6; max-width: 1200px; margin: 0 auto; }
+    .brand-logo img { height: 100px; object-fit: contain; border-radius: 4px; cursor: pointer; }
+    
+    .search-container { flex: 1; max-width: 500px; position: relative; margin: 0 30px; display: flex; align-items: center; }
+    .search-container input { width: 100%; padding: 10px 20px 10px 40px; border: 1px solid #f0f0f0; border-radius: 8px; background: var(--light-gray); font-size: 14px; outline: none; transition: 0.3s; }
+    .search-container input:focus { background: #fff; border-color: #d4d5d9; box-shadow: 0 0 5px rgba(0,0,0,0.05); }
+    .search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #696e79; font-size: 14px; }
+    
+    .header-actions { display: flex; align-items: center; gap: 20px; }
+    .login-btn { background: var(--primary); color: white; padding: 8px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+    .login-btn:hover { background: #e02f5a; }
+    .user-welcome { font-weight: bold; color: var(--dark); font-size: 14px; cursor: pointer; padding: 8px 15px; border-radius: 4px; background: #f0f2f5; transition: 0.3s; }
+    
+    .cart-icon { position: relative; background: none; border: none; cursor: pointer; font-size: 22px; color: var(--dark); transition: 0.3s; }
+    .cart-icon:hover { color: var(--primary); }
+    .cart-badge { position: absolute; top: -6px; right: -8px; background: var(--primary); color: white; font-size: 12px; font-weight: bold; border-radius: 50%; padding: 2px 7px; border: 2px solid white; }
+
+    /* 🌟 Category Menu */
+    .category-nav { background: #fff; display: flex; justify-content: center; }
+    .category-nav ul { display: flex; list-style: none; gap: 40px; margin: 0; padding: 0; }
+    .nav-item { position: relative; }
+    .nav-item > a { text-decoration: none; color: var(--dark); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; padding: 15px 0; display: block; position: relative; transition: color 0.3s; }
+    .nav-item > a::after { content: ''; position: absolute; width: 0; height: 3px; bottom: 0; left: 0; background-color: var(--primary); transition: width 0.3s ease; }
+    .nav-item:hover > a { color: var(--primary); }
+    .nav-item:hover > a::after { width: 100%; }
+
+    .dropdown { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: #fff; width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px; border-top: 3px solid var(--primary); opacity: 0; visibility: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; padding: 10px 0; z-index: 100; }
+    .nav-item:hover .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .dropdown a { text-decoration: none; color: #535766; padding: 10px 20px; font-size: 14px; font-weight: 500; transition: 0.2s; }
+    .dropdown a:hover { color: var(--primary); background: #fcfcfc; font-weight: 600; padding-left: 25px; }
+
+    /* 🔥 SUPER PREMIUM HERO BANNER (Full Width Horizontal) 🔥 */
+    .hero-section { width: 100%; height: 420px; background: linear-gradient(135deg, #fcedf0 0%, #e2e8f0 100%); display: flex; align-items: center; justify-content: space-between; padding: 0 10%; position: relative; overflow: hidden; }
+    .hero-content { max-width: 550px; z-index: 2; }
+    .hero-subtitle { color: var(--primary); font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+    .hero-title { font-size: 56px; font-weight: 900; color: var(--dark); line-height: 1.1; margin-bottom: 20px; }
+    .hero-desc { font-size: 17px; color: #535766; line-height: 1.6; margin-bottom: 35px; }
+    .hero-btn { background: var(--primary); color: #fff; padding: 16px 40px; border-radius: 50px; font-size: 16px; font-weight: 800; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(255,63,108,0.3); transition: 0.3s; display: inline-block; }
+    .hero-btn:hover { transform: translateY(-4px); box-shadow: 0 15px 25px rgba(255,63,108,0.4); }
+    
+    .hero-image { position: absolute; right: 8%; bottom: 0; height: 95%; z-index: 1; object-fit: contain; filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.1)); }
+    .hero-shape { position: absolute; right: 0; top: 0; height: 100%; width: 45%; background: var(--primary); opacity: 0.04; border-radius: 300px 0 0 300px; z-index: 0; }
+
+    /* Products Area */
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; }
+    .section-title { font-size: 26px; margin-bottom: 30px; font-weight: 900; border-left: 6px solid var(--primary); padding-left: 12px; color: var(--dark); text-transform: uppercase; }
+    
+    .products-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 25px; }
+    @media (min-width: 576px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .product-card { background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #f0f0f0; }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+    .product-image { width: 100%; height: 280px; object-fit: cover; }
+    .product-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+    .product-name { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #282c3f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 15px; }
+    .price { font-size: 22px; font-weight: 800; color: #282c3f; }
+    .old-price { font-size: 14px; text-decoration: line-through; color: #878787; }
+    .add-btn { background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 10px; border-radius: 6px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
+    .add-btn:hover { background: var(--primary); color: #fff; }
+    
+    /* Cart Drawer */
+    .cart-drawer { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.15); z-index: 2000; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .cart-drawer.open { right: 0; }
+    .cart-header { padding: 20px; border-bottom: 1px solid #eaeaec; display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; }
+    .cart-header h2 { font-size: 20px; font-weight: 800; }
+    .close-cart { background: none; border: none; font-size: 24px; cursor: pointer; color: #878787; transition: 0.2s; }
+    .close-cart:hover { color: var(--primary); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+    .cart-item { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #eaeaec; }
+    .cart-item img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; }
+    .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .qty-btn { width: 30px; height: 30px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: bold; border-radius: 4px; transition: 0.2s; }
+    .qty-btn:hover { background: var(--light-gray); }
+    .cart-footer { padding: 25px; background: white; border-top: 1px solid #eaeaec; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
+    .cart-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; margin-bottom: 15px; color: var(--dark); }
+    .order-btn { width: 100%; background: #25d366; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(37,211,102,0.3); }
+    .order-btn:hover { background: #1ebd5a; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1500; display: none; backdrop-filter: blur(2px); }
+    .overlay.active { display: block; }
+
+    footer { background: var(--dark); color: white; padding: 40px 20px; margin-top: 50px; text-align: center; }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header-top { flex-wrap: wrap; gap: 15px; }
+      .search-container { order: 3; margin: 0; max-width: 100%; }
+      .category-nav { display: none; }
+      .hero-section { flex-direction: column; height: auto; padding: 40px 20px; text-align: center; }
+      .hero-image { position: relative; height: 300px; right: auto; margin-top: 20px; }
+      .hero-title { font-size: 38px; }
+      .cart-drawer { width: 100%; right: -100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 1. Top Bar Marquee -->
+  <div class="top-bar">
+    <marquee behavior="scroll" direction="left" scrollamount="7">
+      🎉 EXCLUSIVE OFFER: GET <b>10% DISCOUNT</b> ON YOUR FIRST ORDER! USE CODE: <b>VISTAN10</b> &nbsp;&nbsp;|&nbsp;&nbsp; 🚚 FREE SHIPPING ON ALL ORDERS OVER ₹499 &nbsp;&nbsp;|&nbsp;&nbsp; ⚡ 24/7 PREMIUM CUSTOMER SUPPORT
+    </marquee>
+  </div>
+
+  <!-- 💎 2. Premium Header -->
+  <header class="premium-header">
+    <div class="header-top">
+      <a href="/" class="brand-logo">
+        <img src="/static/logos.png"  alt="Vistan Store">
+      </a>
+  
+      <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search for products, brands and more..." onkeyup="filterProducts()" />
+      </div>
+  
+      <div class="header-actions">
+        {% if current_user_name %}
+          <a href="/profile" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <div class="user-welcome">
+              <i class="fa-solid fa-circle-user" style="color: #ff3f6c; font-size: 16px;"></i> My Profile
+            </div>
+          </a>
+        {% else %}
+          <button class="login-btn" onclick="openAuthModal()">Login</button>
+        {% endif %}
+        
+        <button class="cart-icon" onclick="toggleCart()">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Category Menu (Real Database Match Filters) -->
+    <nav class="category-nav">
+      <ul>
+        <li class="nav-item"><a href="#" onclick="renderProducts(products); document.querySelector('.section-title').innerText='Trending This Week'; return false;">Home</a></li>
+        
+        <li class="nav-item">
+          <a href="#" onclick="filterByCategory('Men'); return false;">Men</a>
+          <div class="dropdown">
+            <a href="#" onclick="filterByCategory('Men', 'T-Shirts'); return false;">T-Shirts</a>
+            <a href="#" onclick="filterByCategory('Men', 'Casual Shirts'); return false;">Casual Shirts</a>
+            <a href="#" onclick="filterByCategory('Men', 'Jeans'); return false;">Jeans</a>
+            <a href="#" onclick="filterByCategory('Men', 'Jackets'); return false;">Jackets</a>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" onclick="filterByCategory('Women'); return false;">Women</a>
+          <div class="dropdown">
+            <a href="#" onclick="filterByCategory('Women', 'Kurtas & Suits'); return false;">Kurtas & Suits</a>
+            <a href="#" onclick="filterByCategory('Women', 'Tops'); return false;">Tops</a>
+            <a href="#" onclick="filterByCategory('Women', 'Dresses'); return false;">Dresses</a>
+            <a href="#" onclick="filterByCategory('Women', 'Sarees'); return false;">Sarees</a>
+          </div>
+        </li>
+
+        <li class="nav-item"><a href="#" onclick="filterByCategory('Footwear'); return false;">Footwear</a></li>
+        <li class="nav-item"><a href="#" onclick="filterByCategory('Accessories'); return false;">Accessories</a></li>
+        <li class="nav-item"><a href="#" onclick="filterByCategory('Electronics'); return false;">Electronics</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🚀 3. FULL WIDTH HERO BANNER -->
+  <div class="hero-section">
+      <div class="hero-shape"></div>
+      <div class="hero-content">
+          <div class="hero-subtitle">✨ New Collection 2026</div>
+          <h1 class="hero-title">Discover Your<br>Perfect Style</h1>
+          <p class="hero-desc">Upgrade your wardrobe with our premium collection of fashion, footwear, and accessories. Experience the best quality at unbeatable prices directly to your door.</p>
+          <a href="#productSection" class="hero-btn">Shop Now <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></a>
+      </div>
+      <!-- Placeholder High-Quality Model Image (You can replace this URL with your own transparent background image) -->
+      <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=800&ixlib=rb-4.0.3" class="hero-image" alt="Fashion Model">
+  </div>
+
+  <!-- 🛍️ 4. Products Area -->
+  <div class="container" id="productSection">
+    <h2 class="section-title">Trending This Week</h2>
+    <div class="products-grid" id="productGrid"></div>
+  </div>
+
+  <!-- 🛒 5. Cart Drawer -->
+  <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h2><i class="fa-solid fa-bag-shopping" style="color: #ff3f6c; margin-right: 8px;"></i> My Cart</h2>
+        <button class="close-cart" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total Amount:</span><span id="cartTotal">₹0</span></div>
+      <button class="order-btn" onclick="checkoutViaWhatsApp()"><i class="fa-brands fa-whatsapp"></i> Checkout via WhatsApp</button>
+    </div>
+  </div>
+
+  {% include 'login_modal.html' %}
+
+  <footer>&copy; 2026 Vistan Store. Crafted with ❤️ for premium shopping.</footer>
+
+  <!-- ⚙️ 6. Javascript Logic (Updated Database Match Filter) -->
+  <script>
+    const isLoggedIn = {% if current_user_name %}true{% else %}false{% endif %};
+
+    // हमने यहाँ category और subcategory डेटाबेस से खींची है
+    let products = [
+      {% for p in products %}
+      { 
+        id: {{ p.id }}, 
+        name: "{{ p.name }}", 
+        price: {{ p.price }}, 
+        oldPrice: {{ p.old_price }}, 
+        image: "{{ p.image }}",
+        category: "{{ p.category or '' }}",
+        subcategory: "{{ p.subcategory or '' }}"
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+    let cart = JSON.parse(localStorage.getItem('vistanCart')) || [];
+    const sellerWhatsAppNumber = "916388322731"; 
+
+    function renderProducts(items) {
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = items.map(p => `
+        <div class="product-card" onclick="window.location.href='/product/${p.id}'">
+          <img src="${p.image}" class="product-image" />
+          <div class="product-info">
+            <h3 class="product-name">${p.name}</h3>
+            <div class="price-row">
+              <span class="price">₹${p.price}</span>
+              <span class="old-price">₹${p.oldPrice}</span>
+            </div>
+            <button class="add-btn" onclick="addToCart(event, ${p.id})">ADD TO CART</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filterProducts() {
+      let query = document.getElementById('searchInput').value.toLowerCase();
+      let filtered = products.filter(p => p.name.toLowerCase().includes(query));
+      renderProducts(filtered);
+      
+      if(query.trim() === "") {
+        document.querySelector('.section-title').innerText = "Trending This Week";
+      } else {
+        document.querySelector('.section-title').innerText = `Search Results for "${query}"`;
+      }
+    }
+
+    // नया स्मार्ट फ़िल्टर (जो सिर्फ असली कैटेगरी मैच करेगा, नाम नहीं)
+    function filterByCategory(cat, subcat = null) {
+      let filtered = products.filter(p => {
+          // अगर प्रोडक्ट में कैटेगरी सेट है (नए प्रोडक्ट्स)
+          if (p.category && p.category.trim() !== "" && p.category !== "None") {
+              if (subcat) return p.subcategory.toLowerCase() === subcat.toLowerCase();
+              return p.category.toLowerCase() === cat.toLowerCase();
+          }
+          
+          // अगर पुराने प्रोडक्ट हैं (जिनमें कैटेगरी नहीं थी) तो नाम से ढूंढेगा
+          let nameLower = p.name.toLowerCase();
+          if (cat.toLowerCase() === 'men') {
+              // \bmen\b सुनिश्चित करेगा कि सिर्फ 'men' मैच हो, 'women' नहीं
+              return /\\bmen\\b/.test(nameLower); 
+          }
+          if (subcat) return nameLower.includes(subcat.toLowerCase());
+          return nameLower.includes(cat.toLowerCase());
+      });
+
+      renderProducts(filtered);
+      let displayTitle = subcat ? subcat : cat;
+      document.querySelector('.section-title').innerText = `Category: ${displayTitle.toUpperCase()}`;
+      
+      if(filtered.length === 0) {
+          document.getElementById("productGrid").innerHTML = `<p style="grid-column: 1/-1; text-align: center; font-size: 18px; color: #888; padding: 40px 0;"><i class="fa-solid fa-box-open" style="font-size: 40px; color: #ccc; margin-bottom:15px; display:block;"></i>इस कैटेगरी में अभी कोई प्रोडक्ट नहीं है।</p>`;
+      }
+    }
+
+    function addToCart(event, productId) {
+      event.stopPropagation();
+      const product = products.find(p => p.id === productId);
+      const existing = cart.find(item => item.id === productId);
+      if (existing) existing.qty += 1; else cart.push({ ...product, qty: 1 });
+      localStorage.setItem('vistanCart', JSON.stringify(cart));
+      updateCartUI();
+      toggleCart(true); 
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (item) { item.qty += delta; if (item.qty <= 0) cart = cart.filter(i => i.id !== id); }
+      localStorage.setItem('vistanCart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById("cartBadge").innerText = cart.reduce((s, i) => s + i.qty, 0);
+      document.getElementById("cartTotal").innerText = "₹" + cart.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById("cartItems").innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img src="${item.image}">
+          <div class="cart-item-details">
+            <div style="font-weight:700; color: #282c3f;">${item.name}</div>
+            <div style="color:var(--primary); font-weight:800; font-size:16px;">₹${item.price}</div>
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+              <span style="padding: 0 10px; font-weight:bold;">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      
+      if(cart.length === 0) {
+          document.getElementById("cartItems").innerHTML = `<div style="text-align:center; padding: 40px 20px; color:#878787;"><i class="fa-solid fa-cart-arrow-down" style="font-size: 50px; margin-bottom:15px; color:#eaeaec;"></i><p>Your cart is empty.</p></div>`;
+      }
+    }
+
+    function toggleCart(force) { 
+        const drawer = document.getElementById("cartDrawer");
+        const overlay = document.getElementById("overlay");
+        
+        if (typeof force === "boolean") {
+            if (force) { drawer.classList.add("open"); overlay.classList.add("active"); } 
+            else { drawer.classList.remove("open"); overlay.classList.remove("active"); }
+        } else {
+            drawer.classList.toggle("open"); overlay.classList.toggle("active");
+        }
+    }
+
+    function checkoutViaWhatsApp() {
+      if (cart.length === 0) return alert("Your cart is empty!");
+      if (!isLoggedIn) { toggleCart(false); openAuthModal(); return; }
+      let msg = "Hello Vistan Store, I want to order:%0a%0a";
+      let total = 0;
+      cart.forEach((item, i) => { msg += `${i + 1}. *${item.name}* (x${item.qty}) - ₹${item.price * item.qty}%0a`; total += item.price * item.qty; });
+      window.open(`https://wa.me/${sellerWhatsAppNumber}?text=${msg}%0a*Total Amount:* ₹${total}`, "_blank");
+    }
+
+    renderProducts(products); updateCartUI();
+  </script>
+</body>
+</html>
